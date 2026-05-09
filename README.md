@@ -217,7 +217,6 @@ Main results table aggregating relevant prior art under a single protocol:
 | Method | Type |
 |---|---|
 | Qwen2.5-7B prompting | Same-base prompting baseline |
-| GPT-4o-mini prompting | Closed-source upper-bound reference |
 | MedAgents (NeurIPS 2024) | Multi-agent prompting |
 | MDAgents (NeurIPS 2024) | Multi-agent prompting |
 | Self-Consistency (k=20) | Same-base sampling baseline |
