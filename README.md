@@ -104,42 +104,6 @@ parseable:
 Malformed trajectories receive zero on **every** sub-reward, preventing
 format-evasion gaming.
 
-### Four verifiable sub-rewards
-
-| Sub-reward | Verification mechanism | Reliability |
-|---|---|---|
-| `r_select`  | Tool choice vs. gold tool set: 0.5·Jaccard + 0.5·LCS | High |
-| `r_args`    | Per-key, type-aware match (numeric tolerance, boolean exact, enum normalized); LLM-judge fallback for free text | Medium-high |
-| `r_compute` | Re-execute the called tool with gold arguments; exact match on output | **Perfect** (deterministic) |
-| `r_final`   | Closed-form numeric match (MedCalc) or LLM-judge (open-ended) + format component | Medium-high |
-
-Total reward: `R = α₁·r_select + α₂·r_args + α₃·r_compute + α₄·r_final`.
-Four preset α-vectors define the experimental axis:
-
-| Preset | α₁ | α₂ | α₃ | α₄ | Role |
-|---|---|---|---|---|---|
-| outcome           | 0    | 0    | 0    | 1.00 | Classical RLVR baseline |
-| step_only         | 0.25 | 0.25 | 0.25 | 0.25 | Equal-weight ablation |
-| **shaped** ★      | 0.15 | 0.20 | 0.30 | 0.35 | Default — heavier compute, anchored final |
-| compute_anchored  | 0.05 | 0.10 | 0.50 | 0.35 | Extreme compute weighting |
-
-### Verifier degradation
-
-Five graded verifiers, built by injecting *p*-flip noise into otherwise
-rule-based signals:
-
-| Level | r_select | r_args | r_compute | r_final |
-|---|---|---|---|---|
-| V0 (oracle)       | rule       | rule       | rule | rule       |
-| V1 (LLM judge)    | rule       | rule       | rule | LLM judge  |
-| V2 (10 % noise)   | flip(0.1)  | flip(0.1)  | rule | flip(0.1)  |
-| V3 (30 % noise)   | flip(0.3)  | flip(0.3)  | rule | flip(0.3)  |
-| V4 (50 % noise)   | flip(0.5)  | flip(0.5)  | rule | flip(0.5)  |
-
-`r_compute` is **never** degraded — clinical calculators are deterministic at
-deployment time, which makes "compute as reliable anchor" a load-bearing piece
-of the narrative rather than a convenient implementation choice.
-
 ### Training
 
 Two-stage: an SFT warmstart on filtered synthetic and bench-derived
@@ -155,7 +119,7 @@ loop fits on a single 32 GB card.
 
 | Dataset | Role | License |
 |---|---|---|
-| **MedCalc-Bench** (NeurIPS 2024) | Primary in-domain RL training and evaluation; ~55 calculators, ~10K items | CC-BY |
+| **MedCalc-Bench** | Primary in-domain RL training and evaluation; ~55 calculators, ~10K items | CC-BY |
 | **MedQA-USMLE** | SFT warmstart + non-tool baseline; 12K items | MIT |
 | **MedMCQA** | SFT warmstart augmentation; 194K items | Apache 2.0 |
 | **DDXPlus** | Multi-step differential-diagnosis trajectories; 1.3M synthetic cases | CC-BY |
@@ -261,17 +225,3 @@ Main results table aggregating relevant prior art under a single protocol:
 | **Ours (GRPO-shaped)** | This work |
 
 Reported on MedCalc test, OOD-tool, OOD-format, and tokens-per-question.
-
-### Statistical protocol
-
-Every reported number is averaged over seeds {7, 17, 42}. Significance is
-assessed with paired bootstrap (10K resamples).
-
----
-
-## Internal Documents
-
-- `docs/proposal.md` — full research proposal and motivation chain
-- `docs/technical_design.md` — formal mathematical definitions of the reward
-  functions, GRPO objective, hyperparameters, and TRL + unsloth implementation
-  notes
