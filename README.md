@@ -1,6 +1,6 @@
 # Distinguishing Glioma Recurrence from Radiation Necrosis on Post-Treatment Brain MRI
 
-*INFO 442 — Team 8 · Project BrainTT*
+*INFO 442 — Team 14 · Project BrainTT*
 - **Team Leader: Yutong Wang (ID:320230942461)** — Google Scholar: [https://scholar.google.com/citations?hl=en&authuser=1&user=73MjwF0AAAAJ](https://scholar.google.com/citations?hl=en&authuser=1&user=73MjwF0AAAAJ)
 - **Team Members: Zijin Wu(ID:320230942571), Xiaopeng Fan(ID:320230941801), Ye Wang(ID:320230942541), Yunfei Shang(ID:320230942271)**
 
