@@ -1,6 +1,8 @@
 # Distinguishing Glioma Recurrence from Radiation Necrosis on Post-Treatment Brain MRI
 
 *INFO 442 — Team 8 · Project BrainTT*
+- **Team Leader: Yutong Wang** — Google Scholar: [https://scholar.google.com/citations?hl=en&authuser=1&user=73MjwF0AAAAJ](https://scholar.google.com/citations?hl=en&authuser=1&user=73MjwF0AAAAJ)
+- **Team Members: Zijin Wu, Xiaopeng Fan, Ye Wang, YUnfei Shang**
 
 This is a data-science project carried out in collaboration with the **Institute of Software, Chinese Academy of Sciences (ISCAS)** and **Beijing Tiantan Hospital**, advised by **Prof. Zhulin An (ISCAS) and Prof. Zhongfeng Kang (Lanzhou University)**. The team has been granted access to a private post-radiation brain-tumor MRI cohort that is not publicly available, and our goal is to build a clinically useful decision-support pipeline on top of it.
 
@@ -82,7 +84,7 @@ The concrete novelties will be locked in during the implementation phase; for th
 
 ---
 
-## 4 · Pipeline overview
+## 4 · Pipeline plan
 
 ```
 raw cohort  ──►  cleaning  ──►  EDA + visualization  ──►  modeling  ──►  evaluation
@@ -102,7 +104,7 @@ raw cohort  ──►  cleaning  ──►  EDA + visualization  ──►  mode
 
 ---
 
-## 5 · Repository layout
+## 5 · Planned Repository layout
 
 ```
 .
@@ -152,27 +154,13 @@ python -m src.evaluate --config configs/default.yaml \
 
 ---
 
-## 7 · Deliverables (Course Track)
-
-In line with the INFO 442 course requirements, the team will deliver:
-
-- A reproducible end-to-end pipeline covering data cleaning, EDA, visualization, modeling, and evaluation.
-- A written report and a final presentation.
-- Public-facing project artefacts (this repository, figures, and metrics) under the project's chosen license, with the underlying private data kept off-repo per our data-use agreement with Tiantan Hospital and ISCAS.
-
----
-
-## 8 · Team
-
-- **Team lead (corresponding student)** — Google Scholar: [https://scholar.google.com/citations?hl=en&authuser=1&user=73MjwF0AAAAJ](https://scholar.google.com/citations?hl=en&authuser=1&user=73MjwF0AAAAJ)
-- INFO 442 — Team 8
 
 ### Acknowledgements
 
-We thank **Prof. Zhulin An** and his group at the **Institute of Software, Chinese Academy of Sciences**, and clinical collaborators at **Beijing Tiantan Hospital**, for sharing the private post-radiation glioma cohort and for the clinical guidance that shapes this project.
+We thank **Prof. Zhulin An** and his group at the **Institute of Software, Chinese Academy of Sciences**, clinical collaborators at **Beijing Tiantan Hospital**, for sharing the private post-radiation glioma cohort and for the clinical guidance that shapes this project, and **Prof. Zhongfeng Kang**, **André Catarino**, **Rui**  for carefully guidance.
 
 ---
 
-## 9 · Data and ethics statement
+## Data and ethics statement
 
 The cohort used in this project is private patient data covered by a data-use agreement between our partners and the team lead. Raw imaging and any patient-identifiable information are **not** included in this repository; the example images in `data_example/` are de-identified illustrative slices, and the screenshots in `data_source_comment/` document the data hand-off only. All experiments will be carried out locally on approved compute.
