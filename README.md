@@ -84,7 +84,7 @@ The concrete novelties will be locked in during the implementation phase; for th
 
 ---
 
-## 4 · Pipeline plan
+## 4 · Planned pipeline
 
 ```
 raw cohort  ──►  cleaning  ──►  EDA + visualization  ──►  modeling  ──►  evaluation
@@ -104,7 +104,7 @@ raw cohort  ──►  cleaning  ──►  EDA + visualization  ──►  mode
 
 ---
 
-## 5 · Planned Repository layout
+## 5 · Planned repository layout
 
 ```
 .
