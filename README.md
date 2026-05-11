@@ -2,7 +2,7 @@
 
 *INFO 442 — Team 8 · Project BrainTT*
 - **Team Leader: Yutong Wang** — Google Scholar: [https://scholar.google.com/citations?hl=en&authuser=1&user=73MjwF0AAAAJ](https://scholar.google.com/citations?hl=en&authuser=1&user=73MjwF0AAAAJ)
-- **Team Members: Zijin Wu, Xiaopeng Fan, Ye Wang, YUnfei Shang**
+- **Team Members: Zijin Wu, Xiaopeng Fan, Ye Wang, Yunfei Shang**
 
 This is a data-science project carried out in collaboration with the **Institute of Software, Chinese Academy of Sciences (ISCAS)** and **Beijing Tiantan Hospital**, advised by **Prof. Zhulin An (ISCAS) and Prof. Zhongfeng Kang (Lanzhou University)**. The team has been granted access to a private post-radiation brain-tumor MRI cohort that is not publicly available, and our goal is to build a clinically useful decision-support pipeline on top of it.
 
