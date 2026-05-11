@@ -91,17 +91,6 @@ raw cohort  ──►  cleaning  ──►  EDA + visualization  ──►  mode
    (NIfTI)     (manifest.json)   (figures, stats)        (.pt)         (metrics.json)
 ```
 
-| Stage | Code | What it does |
-|---|---|---|
-| Cleaning | `src/data/cleaning.py` | Walks the raw dump, harmonises modality naming, drops cases with missing modalities or unknown labels, writes `manifest.json` and a structured drop-report. |
-| Preprocessing | `src/data/preprocessing.py` | Foreground z-score normalisation, isotropic resampling, lesion-centred crop/pad. |
-| Dataset | `src/data/dataset.py` | Multimodal torch `Dataset` + weighted-sampler dataloader to address class imbalance. |
-| EDA | `src/analysis/eda.py` | Class balance, per-modality intensity statistics, lesion-volume distribution. |
-| Visualization | `src/visualization/visualize.py` | Multi-modal slice panels and segmentation overlays. |
-| Model | `src/models/network.py` | Multi-task encoder–decoder backbone with three medical-prior modules and a recurrence-vs-necrosis classification head. |
-| Losses | `src/losses/losses.py` | Focal classification loss + Dice/CE segmentation loss + deep supervision. |
-| Train / Eval | `src/train.py`, `src/evaluate.py` | End-to-end training loop and metric reporting (Accuracy, F1, AUC, Sensitivity, Specificity, Dice). |
-
 ---
 
 ## 5 · Planned repository layout
@@ -126,30 +115,6 @@ raw cohort  ──►  cleaning  ──►  EDA + visualization  ──►  mode
 │   └── run_eda.py
 ├── requirements.txt
 └── README.md
-```
-
----
-
-## 6 · How to run (planned)
-
-```bash
-# 1. environment
-python -m venv .venv && source .venv/bin/activate
-pip install -r requirements.txt
-
-# 2. clean the raw dump into a curated manifest
-python scripts/run_clean.py --raw_root /path/to/private/raw --out_root data/processed
-
-# 3. exploratory analysis on the cleaned cohort
-python scripts/run_eda.py --manifest data/processed/manifest.json --out_dir outputs/eda
-
-# 4. train the multi-task model
-python -m src.train --config configs/default.yaml --manifest data/processed/manifest.json
-
-# 5. evaluate on the held-out test split
-python -m src.evaluate --config configs/default.yaml \
-                       --manifest data/processed/manifest.json \
-                       --checkpoint outputs/best.pt --split test
 ```
 
 ---
