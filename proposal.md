@@ -2,7 +2,7 @@
 
 **BrainTT: Multimodal Prior-Aware Discrimination of Glioma Recurrence from Radiation Necrosis on Post-Treatment Brain MRI**
 
-*INFO 442, Team 8 — Lanzhou University. Submitted on behalf of the team by the team lead.*
+*INFO 442, Team 14 — Lanzhou University. Submitted on behalf of the team by the team lead.*
 
 Repository: <https://github.com/Emoliere-s-hajimi/LZU-INFO442-BrainTT>
 
