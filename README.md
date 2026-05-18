@@ -1,7 +1,7 @@
 # Distinguishing Glioma Recurrence from Radiation Necrosis on Post-Treatment Brain MRI
 
 *INFO 442 — Team 14 · Project BrainTT*
-- **Team Leader: Yutong Wang (ID:320230942461)** — Google Scholar: [https://scholar.google.com/citations?hl=en&authuser=1&user=73MjwF0AAAAJ](https://scholar.google.com/citations?hl=en&authuser=1&user=73MjwF0AAAAJ)
+- **Team Leader: Yutong Wang (ID:320230942461)** — Google Scholar: [https://scholar.google.com/citations?hl=en&authuser=1&user=73MjwF0AAAAJ](https://scholar.google.com/citations?hl=en&authuser=1&user=73MjwF0AAAAJ) Personal Profile: [https://emoilere.github.io/](https://emoilere.github.io/)
 - **Team Members: Zijin Wu(ID:320230942571), Xiaopeng Fan(ID:320230941801), Ye Wang(ID:320230942541), Yunfei Shang(ID:320230942271)**
 
 This is a data-science project carried out in collaboration with the **Institute of Software, Chinese Academy of Sciences (ISCAS)** and **Beijing Tiantan Hospital**, advised by **Prof. Zhulin An (ISCAS) and Prof. Zhongfeng Kang (Lanzhou University)**. **The team has been granted access to a private post-radiation brain-tumor MRI cohort that is not publicly available**, and our goal is to build a clinically useful decision-support pipeline on top of it. 
@@ -92,6 +92,18 @@ The concrete novelties will be locked in during the implementation phase; for th
 raw cohort  ──►  cleaning  ──►  EDA + visualization  ──►  modeling  ──►  evaluation
    (NIfTI)     (manifest.json)   (figures, stats)        (.pt)         (metrics.json)
 ```
+
+What we have so far:
+
+| Stage | Code | What it does |
+|---|---|---|
+| Cleaning | `src/data/cleaning.py` | Walks the raw dump, harmonises modality naming, drops cases with missing modalities or unknown labels, writes `manifest.json` and a structured drop-report. |
+| Bias-field correction | `src/data/bias_correction.py` | N4 inhomogeneity correction (SimpleITK) — important for cross-patient T1ce comparison. |
+| Inter-modality registration | `src/data/registration.py` | Rigid registration of each modality to T1ce (Mattes mutual information). |
+| Preprocessing | `src/data/preprocessing.py` | Foreground z-score normalisation, isotropic resampling, lesion-centred crop/pad. |
+| Augmentation | `src/data/augmentation.py` | Composable transforms: flips, intensity shift, gamma, Gaussian noise. |
+| Dataset | `src/data/dataset.py` | Multimodal torch `Dataset` + weighted-sampler dataloader to address class imbalance. |
+
 
 ---
 
