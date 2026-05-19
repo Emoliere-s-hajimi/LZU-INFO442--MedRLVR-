@@ -184,7 +184,6 @@ The cleaning pipeline drops the 13 invalid patient IDs (patients who never recei
 
 After exclusion the cohort settles at **221 patients · 2,396 valid MRI series**.
 
-![Invalid patient IDs](visualization/eda/fig09_invalid_id_strip.png)
 
 ### 3.2 Modality coverage (full cohort, 2,396 valid series)
 
@@ -205,12 +204,6 @@ After exclusion the cohort settles at **221 patients · 2,396 valid MRI series**
 
 > **Finding 1.** The pipeline keeps cases with missing modalities by default (zero-filling the absent channel) so the model learns modality-dropout robustness rather than discarding **527 series (22.0%)** of the cohort. The operational default of `PreprocessConfig.drop_if_missing_modality` is False, which deliberately diverges from the `drop_missing_modalities: true` literal in `configs/default.yaml` — the YAML value is reserved for ablation studies.
 
-![Per-modality presence / missingness](visualization/eda/fig02_modality_coverage.png)
-
-Representative axial mid-slice panel through a fully reconstructed case
-(all four modalities + WT/TC/ET overlay on T1ce):
-
-![Modality panel — representative case](visualization/eda/fig08_modality_panel.png)
 
 ### 3.3 Lesion annotation and PWI coverage
 
