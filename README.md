@@ -8,7 +8,7 @@ This is a data-science project carried out in collaboration with the **Institute
 
 **Note——updated 5.12.2026: The dataset was collected and labbled by Tiantan Hospital, Zhulin An and Zhongfeng Kang, and it is totally  sourced ethically, with all private information about patients removed.**
 
-**Note:——updated 5.19.2026: The dataset is too large that even uploading 3 cases is also impossible, so we upload a case with full modalities(case1) and a case with only 2 modalities(case2), and their processed versions in /some_cleaned_examples_small directory**
+**Note——updated 5.19.2026: The dataset is too large that even uploading 3 cases is also impossible, so we upload a case with full modalities(case1) and a case with only 2 modalities(case2), and their processed versions in /some_cleaned_examples_small directory**
 
 ---
 
