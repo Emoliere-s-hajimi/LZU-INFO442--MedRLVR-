@@ -1,0 +1,478 @@
+[
+  {
+    "case_id": "171",
+    "label": null,
+    "invalid_reason": null,
+    "modality_shape": {
+      "flair": [
+        240,
+        240,
+        155
+      ],
+      "t1": [
+        240,
+        240,
+        155
+      ],
+      "t1ce": [
+        240,
+        240,
+        155
+      ],
+      "t2": [
+        240,
+        240,
+        155
+      ]
+    },
+    "modality_spacing": {
+      "flair": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "t1": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "t1ce": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "t2": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    "modality_source": {
+      "flair": "data/uncleaned_examples/171/BraTS2021_00171_flair.nii.gz",
+      "t1": "data/uncleaned_examples/171/BraTS2021_00171_t1.nii.gz",
+      "t1ce": "data/uncleaned_examples/171/BraTS2021_00171_t1ce.nii.gz",
+      "t2": "data/uncleaned_examples/171/BraTS2021_00171_t2.nii.gz"
+    },
+    "modality_bytes": {
+      "flair": 2090175,
+      "t1": 2122617,
+      "t1ce": 2220340,
+      "t2": 2346164
+    },
+    "has_pwi": false,
+    "has_seg": true,
+    "intensity_stats": {},
+    "available_modalities": [
+      "t1",
+      "t1ce",
+      "t2",
+      "flair"
+    ],
+    "missing_modalities": []
+  },
+  {
+    "case_id": "172",
+    "label": null,
+    "invalid_reason": null,
+    "modality_shape": {
+      "t1": [
+        240,
+        240,
+        155
+      ],
+      "t1ce": [
+        240,
+        240,
+        155
+      ]
+    },
+    "modality_spacing": {
+      "t1": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "t1ce": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    "modality_source": {
+      "t1": "data/uncleaned_examples/172/BraTS2021_00172_t1.nii.gz",
+      "t1ce": "data/uncleaned_examples/172/BraTS2021_00172_t1ce.nii.gz"
+    },
+    "modality_bytes": {
+      "t1": 2250286,
+      "t1ce": 2317659
+    },
+    "has_pwi": false,
+    "has_seg": true,
+    "intensity_stats": {},
+    "available_modalities": [
+      "t1",
+      "t1ce"
+    ],
+    "missing_modalities": [
+      "t2",
+      "flair"
+    ]
+  },
+  {
+    "case_id": "176",
+    "label": null,
+    "invalid_reason": null,
+    "modality_shape": {
+      "flair": [
+        240,
+        240,
+        155
+      ],
+      "t1": [
+        240,
+        240,
+        155
+      ],
+      "t1ce": [
+        240,
+        240,
+        155
+      ],
+      "t2": [
+        240,
+        240,
+        155
+      ]
+    },
+    "modality_spacing": {
+      "flair": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "t1": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "t1ce": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "t2": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    "modality_source": {
+      "flair": "data/uncleaned_examples/176/BraTS2021_00176_flair.nii.gz",
+      "t1": "data/uncleaned_examples/176/BraTS2021_00176_t1.nii.gz",
+      "t1ce": "data/uncleaned_examples/176/BraTS2021_00176_t1ce.nii.gz",
+      "t2": "data/uncleaned_examples/176/BraTS2021_00176_t2.nii.gz"
+    },
+    "modality_bytes": {
+      "flair": 2071277,
+      "t1": 2064112,
+      "t1ce": 2147035,
+      "t2": 2307888
+    },
+    "has_pwi": false,
+    "has_seg": true,
+    "intensity_stats": {},
+    "available_modalities": [
+      "t1",
+      "t1ce",
+      "t2",
+      "flair"
+    ],
+    "missing_modalities": []
+  },
+  {
+    "case_id": "177",
+    "label": null,
+    "invalid_reason": null,
+    "modality_shape": {
+      "flair": [
+        240,
+        240,
+        155
+      ],
+      "t1": [
+        240,
+        240,
+        155
+      ],
+      "t1ce": [
+        240,
+        240,
+        155
+      ],
+      "t2": [
+        240,
+        240,
+        155
+      ]
+    },
+    "modality_spacing": {
+      "flair": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "t1": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "t1ce": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "t2": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    "modality_source": {
+      "flair": "data/uncleaned_examples/177/BraTS2021_00177_flair.nii.gz",
+      "t1": "data/uncleaned_examples/177/BraTS2021_00177_t1.nii.gz",
+      "t1ce": "data/uncleaned_examples/177/BraTS2021_00177_t1ce.nii.gz",
+      "t2": "data/uncleaned_examples/177/BraTS2021_00177_t2.nii.gz"
+    },
+    "modality_bytes": {
+      "flair": 2240448,
+      "t1": 2338717,
+      "t1ce": 2412621,
+      "t2": 2491095
+    },
+    "has_pwi": false,
+    "has_seg": true,
+    "intensity_stats": {},
+    "available_modalities": [
+      "t1",
+      "t1ce",
+      "t2",
+      "flair"
+    ],
+    "missing_modalities": []
+  },
+  {
+    "case_id": "178",
+    "label": null,
+    "invalid_reason": null,
+    "modality_shape": {
+      "t1": [
+        240,
+        240,
+        155
+      ],
+      "t1ce": [
+        240,
+        240,
+        155
+      ],
+      "t2": [
+        240,
+        240,
+        155
+      ]
+    },
+    "modality_spacing": {
+      "t1": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "t1ce": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "t2": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    "modality_source": {
+      "t1": "data/uncleaned_examples/178/BraTS2021_00178_t1.nii.gz",
+      "t1ce": "data/uncleaned_examples/178/BraTS2021_00178_t1ce.nii.gz",
+      "t2": "data/uncleaned_examples/178/BraTS2021_00178_t2.nii.gz"
+    },
+    "modality_bytes": {
+      "t1": 2227095,
+      "t1ce": 2322455,
+      "t2": 2364669
+    },
+    "has_pwi": false,
+    "has_seg": true,
+    "intensity_stats": {},
+    "available_modalities": [
+      "t1",
+      "t1ce",
+      "t2"
+    ],
+    "missing_modalities": [
+      "flair"
+    ]
+  },
+  {
+    "case_id": "183",
+    "label": null,
+    "invalid_reason": null,
+    "modality_shape": {
+      "flair": [
+        240,
+        240,
+        155
+      ],
+      "t1": [
+        240,
+        240,
+        155
+      ],
+      "t1ce": [
+        240,
+        240,
+        155
+      ],
+      "t2": [
+        240,
+        240,
+        155
+      ]
+    },
+    "modality_spacing": {
+      "flair": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "t1": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "t1ce": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "t2": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    "modality_source": {
+      "flair": "data/uncleaned_examples/183/BraTS2021_00183_flair.nii.gz",
+      "t1": "data/uncleaned_examples/183/BraTS2021_00183_t1.nii.gz",
+      "t1ce": "data/uncleaned_examples/183/BraTS2021_00183_t1ce.nii.gz",
+      "t2": "data/uncleaned_examples/183/BraTS2021_00183_t2.nii.gz"
+    },
+    "modality_bytes": {
+      "flair": 1919502,
+      "t1": 1948617,
+      "t1ce": 1988669,
+      "t2": 2106741
+    },
+    "has_pwi": false,
+    "has_seg": true,
+    "intensity_stats": {},
+    "available_modalities": [
+      "t1",
+      "t1ce",
+      "t2",
+      "flair"
+    ],
+    "missing_modalities": []
+  },
+  {
+    "case_id": "184",
+    "label": null,
+    "invalid_reason": null,
+    "modality_shape": {
+      "flair": [
+        240,
+        240,
+        155
+      ],
+      "t1": [
+        240,
+        240,
+        155
+      ]
+    },
+    "modality_spacing": {
+      "flair": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "t1": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    "modality_source": {
+      "flair": "data/uncleaned_examples/184/BraTS2021_00184_flair.nii.gz",
+      "t1": "data/uncleaned_examples/184/BraTS2021_00184_t1.nii.gz"
+    },
+    "modality_bytes": {
+      "flair": 2333353,
+      "t1": 2377974
+    },
+    "has_pwi": false,
+    "has_seg": true,
+    "intensity_stats": {},
+    "available_modalities": [
+      "t1",
+      "flair"
+    ],
+    "missing_modalities": [
+      "t1ce",
+      "t2"
+    ]
+  },
+  {
+    "case_id": "185",
+    "label": null,
+    "invalid_reason": null,
+    "modality_shape": {
+      "t1": [
+        240,
+        240,
+        155
+      ]
+    },
+    "modality_spacing": {
+      "t1": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    "modality_source": {
+      "t1": "data/uncleaned_examples/185/BraTS2021_00185_t1.nii.gz"
+    },
+    "modality_bytes": {
+      "t1": 2256508
+    },
+    "has_pwi": false,
+    "has_seg": true,
+    "intensity_stats": {},
+    "available_modalities": [
+      "t1"
+    ],
+    "missing_modalities": [
+      "t1ce",
+      "t2",
+      "flair"
+    ]
+  }
+]
