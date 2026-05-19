@@ -112,13 +112,16 @@ What we have so far:
 ```
 .
 ├── configs/
-│   └── default.yaml
+│   └── default.yaml              # done, but need revision as the project proceeding
 ├── data_example/                 # representative MRI slices
 ├── data_source_comment/          # data hand-off correspondence
 ├── docs/                         # clinical references provided by collaborators
 ├── src/
-│   ├── analysis/
-│   ├── data/
+|—— case1                         # done
+|—— case2                         # done
+|—— some_cleaned_examples         # done
+│   ├── analysis/                 # done
+│   ├── data/                     # done
 │   ├── losses/
 │   ├── models/
 │   ├── visualization/
