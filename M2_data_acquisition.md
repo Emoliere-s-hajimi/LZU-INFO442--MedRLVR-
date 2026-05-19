@@ -1,4 +1,4 @@
-# BrainTT Data Cleaning & Mining — M2 Report
+# M2 Data Acquisition
 
 INFO 442 · Team 14 · Lanzhou University × ISCAS × Beijing Tiantan Hospital
 
@@ -139,7 +139,7 @@ Modality information ranking (inside-vs-outside z-intensity separation):
 
 ---
 
-## 5. From insights to model priors
+## 5. From insights to model priors(Just proposed, need validation)
 
 The data findings translate directly into architecture / loss / data-pipeline choices. We consolidate the 13 raw insights into 3 prior modules plus 4 loss terms.
 
@@ -147,9 +147,9 @@ The data findings translate directly into architecture / loss / data-pipeline ch
 
 | Module (plug-in stage) | Insights it encodes | Concrete operations |
 |---|---|---|
-| **`ModalityCouplingPrior`** (front stem) | Modality coverage 78%/22% · Synthesis weights · Modality ranking FLAIR > T2 > T1ce > T1 | Per-modality CNN stems → clinical coupling matrix `[[1.0, 0.9, 0.3, 0.3], [0.9, 1.0, 0.4, 0.4], [0.3, 0.4, 1.0, 0.8], [0.3, 0.4, 0.8, 1.0]]` → fusion attention initialised `[0.10, 0.20, 0.30, 0.40]` for [T1, T1ce, T2, FLAIR] · honours `missing_mask` so absent channels get zero fusion weight |
-| **`TopologyShapePrior`** (bottleneck) | Euler χ class signature · Multifocality | Multi-scale morphological gradient (3/5/7) + spatial attention + scalar `chi_pred` head used by the χ regulariser loss |
-| **`AnatomySpatialPrior`** (bottleneck) | Centroid lives mid-brain · Lesions are non-spherical · Future longitudinal extension | Centre-biased spatial mask (×1.5 in central [0.3, 0.7]³, hard-zero in 5 mm skull shell) + one reaction-diffusion step with case-specific (ρ, D) |
+| **`ModalityCouplingPrior`** | Modality coverage 78%/22% · Synthesis weights · Modality ranking FLAIR > T2 > T1ce > T1 | Per-modality CNN stems → clinical coupling matrix `[[1.0, 0.9, 0.3, 0.3], [0.9, 1.0, 0.4, 0.4], [0.3, 0.4, 1.0, 0.8], [0.3, 0.4, 0.8, 1.0]]` → fusion attention initialised `[0.10, 0.20, 0.30, 0.40]` for [T1, T1ce, T2, FLAIR] · honours `missing_mask` so absent channels get zero fusion weight |
+| **`TopologyShapePrior`** | Euler χ class signature · Multifocality | Multi-scale morphological gradient (3/5/7) + spatial attention + scalar `chi_pred` head used by the χ regulariser loss |
+| **`AnatomySpatialPrior`** | Centroid lives mid-brain · Lesions are non-spherical · Future longitudinal extension | Centre-biased spatial mask (×1.5 in central [0.3, 0.7]³, hard-zero in 5 mm skull shell) + one reaction-diffusion step with case-specific (ρ, D) |
 
 ### 5.2 Four data-driven loss terms
 
@@ -174,5 +174,3 @@ Plus `FocalLoss(α=0.25, γ=2.0)` on the recurrence-vs-necrosis classification h
 > Every cohort-level number above maps to a concrete code path: **modality coverage → `ModalityCouplingPrior` initialisation**, **Euler χ class signature → `TopologyShapePrior.chi_pred` + `TopologyChiRegulariser`**, **non-spherical & non-central → `AnatomySpatialPrior` + anisotropic decoder**, **WT ⊇ TC ⊇ ET → `NestingPenalty`**, **volume long tail → `LogVolumeWeightedDice`**, **3.5 : 1 imbalance → weighted sampler + `FocalLoss`**, **22% missingness → modality-dropout augmentation + donor synthesiser**. The model never has to *discover* these regularities from voxels alone — they enter as initialisation, loss curvature, and sampling policy.
 
 ---
-
-*Document version v2.0 · 2026-05-19*
