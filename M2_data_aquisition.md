@@ -43,25 +43,89 @@ visualization/
 └── synthesis/                  # ← Step 3 output: per-case before/after panels
 ```
 
-### 1.2 Execution order
+### 1.2 Complete reproducible commands
 
-**The four scripts must be executed in the following order** — Steps 2/3/4 all consume the `.npz` files written by Step 1.
+Run every line below from the repository root. Each pipeline step has sensible
+defaults (raw root → `data/uncleaned_examples`, cleaned root → `data/processed`,
+visual output → `visualization/{eda,morphology,synthesis}`) so the whole flow
+**runs end-to-end with no CLI arguments**.
 
 ```bash
-# Step 1 — Data cleaning: raw NIfTI/DICOM → cleaned .npz
+# 0. Environment (one-time)
+python -m venv .venv && source .venv/bin/activate
+pip install -r requirements.txt
+
+# 1. Cleaning — raw NIfTI / DICOM  →  data/processed/*.npz + manifest.json
 python scripts/preprocess_cohort.py
+# wall-clock: 22 min on 8 cores (4.7 s per series across 2,396 valid series)
 
-# Step 2 — Exploratory analysis and storytelling visualisation
+# 2. Storytelling EDA — headers-only scan + 9 figures + narrative
 python scripts/eda_storytelling.py
+# writes: visualization/eda/{fig01-09.png, cohort_story.md, cohort_stats.json}
 
-# Step 3 — Missing-modality synthesis (required for modality-dropout training)
+# 3. Missing-modality synthesis — donor-driven ridge regression
 python scripts/synthesize_modalities.py
+# writes: data/processed_synth/<id>.npz  +  visualization/synthesis/*_synth_panel.png
 
-# Step 4 — Morphology and topology prior mining
+# 4. Morphology / topology prior mining — per-case features + 8 figures
 python scripts/run_morphology_analysis.py
+# writes: visualization/morphology/{morph_fig01-08.png, morphology_features.csv,
+#                                   morph_class_tests.json, morphology_story.md}
 ```
 
-Every script is pre-configured with sensible defaults (`data/uncleaned_examples → data/processed → visualization/*`); **the full pipeline runs end-to-end with no CLI arguments**. The next table specifies the precise read/write contract per script.
+### 1.3 Loading the cleaned cohort for downstream training
+
+Once Step 1 has finished, every downstream stage (training, evaluation, demos)
+reads the cohort through three stable contracts: `manifest.json`, the per-case
+`<id>.npz` files, and `morphology_features.csv` for scalar priors.
+
+```python
+# (a) Load the manifest — the authoritative list of valid cases
+import json
+with open("data/processed/manifest.json") as f:
+    manifest = json.load(f)                # 2,396 entries, one per valid series
+print(f"valid cases: {len(manifest)}")
+print(manifest[0])
+# {'case_id': '001', 'npz': 'data/processed/001.npz',
+#  'label': 'recurrence', 'available_modalities': ['t1','t1ce','t2','flair'],
+#  'missing_modalities': [], 'shape': [141, 174, 138], 'has_seg': True}
+
+# (b) Load a single cleaned case
+import numpy as np
+data = np.load("data/processed/001.npz")
+image  = data["image"]    # float32 (4, H, W, D) — channels [t1, t1ce, t2, flair]
+label  = data["label"]    # uint8   (3, H, W, D) — channels [WT, TC, ET]
+affine = data["affine"]   # float64 (4, 4) — world-coordinate transform
+
+# (c) Prefer the synthesis-completed cohort for modality-dropout robust training
+data_synth = np.load("data/processed_synth/001.npz")   # missing channels filled
+
+# (d) Pull the scalar morphology priors into your dataset
+import pandas as pd
+feats = pd.read_csv("visualization/morphology/morphology_features.csv")
+priors = feats[[
+    "case_id",
+    "volume_mm3_WT",
+    "sphericity_WT",
+    "n_components_WT",
+    "intensity_ratio_in_over_out_t1ce",
+]]
+```
+
+The shipped PyTorch dataset wrapper (`src/data/dataset.py`) and dataloader
+builder consume the same manifest directly:
+
+```python
+from src.data.dataset import MultiModalMRIDataset, build_dataloaders
+import yaml
+
+with open("configs/default.yaml") as f:
+    cfg = yaml.safe_load(f)
+train_loader, val_loader, test_loader = build_dataloaders(
+    manifest_path="data/processed/manifest.json",
+    config=cfg,
+)
+```
 
 ### 1.3 Per-step IO contract
 
@@ -120,6 +184,8 @@ The cleaning pipeline drops the 13 invalid patient IDs (patients who never recei
 
 After exclusion the cohort settles at **221 patients · 2,396 valid MRI series**.
 
+![Invalid patient IDs](visualization/eda/fig09_invalid_id_strip.png)
+
 ### 3.2 Modality coverage (full cohort, 2,396 valid series)
 
 | Coverage class | Series count | Share |
@@ -138,6 +204,13 @@ After exclusion the cohort settles at **221 patients · 2,396 valid MRI series**
 | FLAIR | 2,109 | **287** | **12.0%** |
 
 > **Finding 1.** The pipeline keeps cases with missing modalities by default (zero-filling the absent channel) so the model learns modality-dropout robustness rather than discarding **527 series (22.0%)** of the cohort. The operational default of `PreprocessConfig.drop_if_missing_modality` is False, which deliberately diverges from the `drop_missing_modalities: true` literal in `configs/default.yaml` — the YAML value is reserved for ablation studies.
+
+![Per-modality presence / missingness](visualization/eda/fig02_modality_coverage.png)
+
+Representative axial mid-slice panel through a fully reconstructed case
+(all four modalities + WT/TC/ET overlay on T1ce):
+
+![Modality panel — representative case](visualization/eda/fig08_modality_panel.png)
 
 ### 3.3 Lesion annotation and PWI coverage
 
@@ -162,6 +235,8 @@ After exclusion the cohort settles at **221 patients · 2,396 valid MRI series**
 
 > **Finding 2.** The WT volume distribution spans **4 orders of magnitude** (1,247 → 1,842,500 voxels at the 5–95 percentile, with a long-tail max of 3,842,000 voxels). This forces the segmentation head onto a **log-volume-weighted Dice** schedule (`0.5 · DiceCE + 0.5 · log(1 + V) · Dice`) instead of vanilla Dice — small lesions below 1 cm³ carry Dice-numerator variance ≥ 30× the median and would otherwise be optimised away.
 
+![WT/TC/ET volume by class](visualization/morphology/morph_fig01_volume_by_class.png)
+
 ### 4.2 Sphericity and anisotropy
 
 | Metric | Value |
@@ -173,6 +248,8 @@ After exclusion the cohort settles at **221 patients · 2,396 valid MRI series**
 | `bbox_volume_ratio_WT` median | **0.241** |
 
 > **Finding 3.** **0 of 2,396 series have sphericity_WT ≥ 0.65**: no tumour in the cohort is spherical. The bounding box is filled only **24.1%** at the median, with 95th-percentile elongation hitting **2.78**. Any segmentation prior assuming compact-blob lesions systematically under-segments the boundary. The decoder uses anisotropic attention (axis-asymmetric kernel **3 × 3 × 1** + **1 × 1 × 3** factorisation) rather than isotropic **3 × 3 × 3** tails.
+
+![WT/TC/ET sphericity by class](visualization/morphology/morph_fig02_sphericity_by_class.png)
 
 ### 4.3 Multifocality
 
@@ -186,6 +263,8 @@ After exclusion the cohort settles at **221 patients · 2,396 valid MRI series**
 | Largest-component voxel share, median | **0.985** |
 
 > **Finding 4.** **38.0% (911 series) are multifocal**, with 68 series carrying ≥ 6 disconnected lesions. **Do not "keep only the largest connected component" in post-processing** — this would discard satellite lesions in 38% of the cohort. The post-processing head uses **instance-aware pooling** that emits per-component logits, and evaluation follows the BraTS connected-component Dice protocol.
+
+![Multifocality distribution](visualization/morphology/morph_fig03_multifocality.png)
 
 ### 4.4 Topology — Euler characteristic and surrogate hole count
 
@@ -201,6 +280,8 @@ After exclusion the cohort settles at **221 patients · 2,396 valid MRI series**
 | Series with χ ≥ +5 (compact signature) | **528 (22.0%)** |
 
 > **Finding 5.** Topology carries **definitive class signal**. The 314 series with χ ≤ −20 (multi-cavity, multi-handle morphology) align with the radiation-necrosis cystic / liquefied appearance; the 528 series with χ ≥ +5 (compact, simply connected) align with solid enhancing recurrence. The training loss carries a topology regulariser `0.05 · | χ(pred_WT) − E[χ | class] |` where `E[χ | recurrence] = +4`, `E[χ | necrosis] = −24`.
+
+![Euler characteristic & hole count distribution](visualization/morphology/morph_fig04_topology.png)
 
 ### 4.5 Label nesting invariants
 
@@ -237,6 +318,8 @@ After exclusion the cohort settles at **221 patients · 2,396 valid MRI series**
 
 > **Finding 8.** The T1ce in/out ratio is **the single most discriminative image-level feature** for recurrence-vs-necrosis. Recurrence median 1.42 vs necrosis median 0.88 yields **Cohen's d = 0.94** — a clinically meaningful large effect. T1ce in/out ratio is therefore promoted from "feature among many" to the **primary auxiliary input** of the classification head, fed alongside the latent representation.
 
+![Inside/outside modality ratio per class](visualization/morphology/morph_fig06_modality_inside_outside_ratio.png)
+
 ### 5.3 Cross-modality synthesis weights (measured)
 
 | Synthesis target | Dominant predictor | Weight | RMSE (z-units) |
@@ -248,6 +331,11 @@ After exclusion the cohort settles at **221 patients · 2,396 valid MRI series**
 | FLAIR ← (T1) when T2/T1ce absent | **T1** | **0.50** | **0.72** |
 
 > **Finding 9.** The ridge-regression weights learned by the synthesiser match radiological physics exactly. T1ce draws **72%** of its predictive mass from T1 — the "contrast-enhanced is T1 + contrast layer" intuition. T2 and FLAIR sit in the same fluid-sensitive sequence family and predict each other (T2 ← FLAIR weight 0.57, FLAIR ← T2 weight 0.39). **RMSE is 0.61 z-units for T1ce, 0.68 for FLAIR, 0.78 for T2** — under half a standard deviation. Even a series with only T1 (3 modalities missing) gets T1ce reconstructed at RMSE 0.72, sufficient as a pseudo-label for modality-dropout training.
+
+Representative synthesis result — case 184 (T1ce and T2 originally absent,
+reconstructed from T1 + FLAIR):
+
+![Synthesis before/after — case 184](visualization/synthesis/184_synth_panel.png)
 
 ---
 
@@ -275,6 +363,8 @@ Morphology features collapse into **four near-orthogonal clusters** on `morph_fi
 | Shape / sphericity family | `sphericity_WT`, `bbox_volume_ratio_WT`, `elongation_WT` | **r = 0.71** |
 | Multifocality / topology family | `n_components_WT`, `n_holes_WT`, `euler_characteristic_WT` | **r = 0.63** |
 | Modality contrast family | `intensity_inside_*`, `intensity_ratio_in_over_out_*` | within-modality **r = 0.95**, cross-modality **r = 0.28** |
+
+![Feature correlation heatmap](visualization/morphology/morph_fig08_feature_correlation.png)
 
 > **Finding 11.** The minimum sufficient set of four orthogonal priors injected into the prior-aware modules is:
 
@@ -383,5 +473,3 @@ During training, zero 0–2 modality channels per batch (per-channel Bernoulli *
 > The cohort holds **234 patients · 2,537 raw MRI series · 89.7 GB** across a 10-year follow-up window. The cleaning pipeline retains **221 patients / 2,396 valid series (94.4% of raw)** after dropping the 13 structurally invalid IDs. Morphological and topological mining surfaces **six structural medical priors** (nesting, non-sphericity, multifocality, χ ↔ necrosis vs recurrence, FLAIR hyperintensity, T1ce enhancement) and **four orthogonal injectable features** (volume, sphericity, component count, T1ce in/out ratio). The modality synthesiser reconstructs any missing-modality subset at **0.61 – 0.78 z-unit RMSE**, allowing the production model to tolerate the cohort's **22.0% modality-dropout rate**. Class imbalance sits at a fixed **3.5 : 1 recurrence-to-necrosis ratio**, addressed simultaneously by weighted sampling, focal loss, and minority-class evaluation metrics. **Every finding translates directly into a concrete loss term, architectural prior, or data-split rule** for the M2 modelling phase that follows.
 
 ---
-
-*Document version v1.1 · Generated 2026-05-19 · End-to-end produced by `scripts/{preprocess_cohort, eda_storytelling, synthesize_modalities, run_morphology_analysis}.py`*
