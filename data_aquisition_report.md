@@ -1,6 +1,7 @@
-# BrainTT Data Cleaning & Mining — Runbook and Cohort-Wide Findings
+# M2 — # Data Cleaning & Mining 
+**Runbook and Cohort-Wide Findings**
 
-INFO 442 · Team 14 · Lanzhou University × ISCAS × Beijing Tiantan Hospital
+*INFO 442, Team 14 — Lanzhou University. Submitted on behalf of the team by the team lead.*
 
 **Task focus.** Post-operative discrimination and joint segmentation of **glioma recurrence** versus **radiation necrosis** on follow-up multimodal brain MRI. The cohort covers **234 patients** tracked for **10 years (2012-01 – 2022-12)** with **2,537 follow-up MRI series** in total.
 
