@@ -1,4 +1,4 @@
-# M2 — # Data Cleaning & Mining 
+# M2 — Data Cleaning & Mining 
 **Runbook and Cohort-Wide Findings**
 
 *INFO 442, Team 14 — Lanzhou University. Submitted on behalf of the team by the team lead.*
