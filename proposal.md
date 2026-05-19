@@ -4,7 +4,6 @@
 
 *INFO 442, Team 14 — Lanzhou University. Submitted on behalf of the team by the team lead.*
 
-Repository: <https://github.com/Emoliere-s-hajimi/LZU-INFO442-BrainTT>
 
 ---
 
