@@ -23,9 +23,6 @@ python scripts/synthesize_modalities.py
 # Step 4 — Morphology/topology prior mining
 python scripts/run_morphology_analysis.py
 
-# Step 5 — Train / Evaluate (after Steps 1 + 4)
-python -m src.train
-python -m src.evaluate --checkpoint outputs/best_auc.pt --split test --save_plots
 ```
 
 **Loading the cleaned cohort downstream:**
@@ -139,11 +136,11 @@ Modality information ranking (inside-vs-outside z-intensity separation):
 
 ---
 
-## 5. From insights to model priors(Just proposed, need validation)
+## 5. From insights to model priors(Just proposed, still need validation)
 
 The data findings translate directly into architecture / loss / data-pipeline choices. We consolidate the 13 raw insights into 3 prior modules plus 4 loss terms.
 
-### 5.1 Three prior modules
+### 5.1 Three prior modules we palnned so far
 
 | Module (plug-in stage) | Insights it encodes | Concrete operations |
 |---|---|---|
@@ -151,7 +148,7 @@ The data findings translate directly into architecture / loss / data-pipeline ch
 | **`TopologyShapePrior`** | Euler χ class signature · Multifocality | Multi-scale morphological gradient (3/5/7) + spatial attention + scalar `chi_pred` head used by the χ regulariser loss |
 | **`AnatomySpatialPrior`** | Centroid lives mid-brain · Lesions are non-spherical · Future longitudinal extension | Centre-biased spatial mask (×1.5 in central [0.3, 0.7]³, hard-zero in 5 mm skull shell) + one reaction-diffusion step with case-specific (ρ, D) |
 
-### 5.2 Four data-driven loss terms
+### 5.2 Four data-driven loss terms we proposed
 
 | Loss term | Insight source | Form |
 |---|---|---|
