@@ -176,6 +176,45 @@ Output: `visualization/morphology/morphology_features.csv`. Use case: scalar pri
 
 ---
 
+## Stage 11 — Per-case visual verification (case studies)
+
+**What.** For every cleaned case, render a **5-figure verification deck** under `visualization/case_study/<case_id>/` that demonstrates the cleaning pipeline produced the expected output. The deck is the case-level twin of the cohort-level EDA — same priors, but viewed on one patient at a time.
+
+**How.** The [`case_study_visulization/`](case_study_visulization/) package (a top-level repo folder, peer to `src/` and `scripts/`). Five modules + a runner:
+
+| Module | Output PNG | What it draws | Source modules used |
+|---|---|---|---|
+| `anatomy.py` | `01_anatomy_orthogonal.png` | 3 orthogonal views × 4 modalities + seg overlay row | matplotlib only |
+| `tumor_3d.py` | `02_tumor_3d_nesting.png` | marching-cubes surfaces of WT / TC / ET | `skimage.measure.marching_cubes` + `mpl_toolkits.mplot3d` |
+| `topology.py` | `03_topology.png` | components, cavities, Euler χ, distance transform | `scipy.ndimage.label`, `binary_fill_holes`, `distance_transform_edt` |
+| `morphology.py` | `04_morphology.png` | sphericity, PCA axes, surface roughness, polar shape fingerprint | `scipy.ndimage` (grey morphology, eigendecomposition), polar plot |
+| `modality_signature.py` | `05_modality_signature.png` | per-modality inside/outside histograms + Bhattacharyya distance | `numpy.histogram` |
+| `run_case_study.py` | `case_study_summary.json` | batch driver over `--in_dir` of `.npz` files | — |
+
+Run:
+
+```bash
+# Re-emit the entire deck for every reference case
+python -m case_study_visulization.run_case_study --in_dir data/some_cleaned_examples
+
+# One module only — useful while iterating
+python -m case_study_visulization.topology --npz data/processed/171.npz
+```
+
+**Why.** Each cleaning stage above is justified at the *cohort* level by a statistic (e.g. "78.0% of series have all 4 modalities"). The case-study deck shows that a *given* case after running through Stages 0–8 actually exhibits the expected behaviour: the schema is right (anatomy), the nesting is preserved (tumor_3d), the topology features are computable (topology), the shape features match the cohort distribution (morphology), and the modality contrast follows the expected ranking (modality_signature).
+
+**Effect.** 5 PNGs (≈ 2.4 MB) per case, ≈ 8 s of CPU per case. Concrete realisations:
+
+| Stage / Finding under verification | Case-study figure that confirms it |
+|---|---|
+| Stage 7 — segmentation label conversion (nesting) | `02_tumor_3d_nesting.png` (TC ⊆ WT share + ET ⊆ TC share both = 1.000) |
+| Stage 6 — foreground z-score (background ≠ missing) | `01_anatomy_orthogonal.png` (background renders as dark gray, missing modality renders as a "modality missing" placeholder) |
+| Finding 5 — Euler χ class signature | `03_topology.png` (per-case χ printed and compared to cohort thresholds) |
+| Finding 3 — non-spherical lesions | `04_morphology.png` (equivalent-sphere outline visibly mismatches the lesion) |
+| Finding 7 + 8 — modality information ranking | `05_modality_signature.png` (per-case Bhattacharyya ranking + T1ce ratio call-out) |
+
+---
+
 ## Pipeline-stage summary table
 
 | Stage | Transformation | Justification (one line) | Code reference |
@@ -191,6 +230,7 @@ Output: `visualization/morphology/morphology_features.csv`. Use case: scalar pri
 | 8 | Serialisation + manifest | Self-describing archive per case + auditable index | `np.savez_compressed`, `write_report` |
 | 9 | Missing-modality synthesis (optional) | Pseudo-labels for modality-dropout training | `scripts/synthesize_modalities.py` |
 | 10 | Morphology features (optional) | Scalar priors for the classification head + χ loss | `scripts/run_morphology_analysis.py` |
+| 11 | Case-study visual verification (optional) | Per-case 5-figure deck proving each prior on one patient | `case_study_visulization/` |
 
 ---
 
