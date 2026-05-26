@@ -1,4 +1,4 @@
-# M2 Data Acquisition
+# M2/M3 — Data Acquisition & Preprocessing
 
 INFO 442 · Team 14 · Lanzhou University × ISCAS × Beijing Tiantan Hospital
 
