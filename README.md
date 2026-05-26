@@ -118,7 +118,9 @@ What we have so far:
 ├── data_example/                 # representative MRI slices
 ├── data_source_comment/          # data hand-off correspondence
 ├── docs/                         # clinical references provided by collaborators
-├── src/
+├── src
+│   ├── analysis
+│   └── data
 |—— case1                         # done
 |—— case2                         # done
 |—— some_cleaned_examples         # done
@@ -132,7 +134,15 @@ What we have so far:
 ├── scripts/
 │   ├── run_clean.py
 │   └── run_eda.py
+├── visualization
+│   ├── case_study
+│   ├── data_insights
+│   ├── eda
+│   ├── lesion_wise_visualization
+│   ├── morphology
+│   └── synthesis
 ├── requirements.txt
+│   ...
 └── README.md
 ```
 
