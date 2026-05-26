@@ -1,0 +1,24 @@
+[
+  {
+    "case_id": "001",
+    "figures": {
+      "anatomy": "/mnt/e/info442_tiantanmed/visualization/case_study/001/01_anatomy_orthogonal.png",
+      "tumor_3d": "/mnt/e/info442_tiantanmed/visualization/case_study/001/02_tumor_3d_nesting.png",
+      "topology": "/mnt/e/info442_tiantanmed/visualization/case_study/001/03_topology.png",
+      "morphology": "/mnt/e/info442_tiantanmed/visualization/case_study/001/04_morphology.png",
+      "modality_signature": "/mnt/e/info442_tiantanmed/visualization/case_study/001/05_modality_signature.png"
+    },
+    "errors": {}
+  },
+  {
+    "case_id": "002",
+    "figures": {
+      "anatomy": "/mnt/e/info442_tiantanmed/visualization/case_study/002/01_anatomy_orthogonal.png",
+      "tumor_3d": "/mnt/e/info442_tiantanmed/visualization/case_study/002/02_tumor_3d_nesting.png",
+      "topology": "/mnt/e/info442_tiantanmed/visualization/case_study/002/03_topology.png",
+      "morphology": "/mnt/e/info442_tiantanmed/visualization/case_study/002/04_morphology.png",
+      "modality_signature": "/mnt/e/info442_tiantanmed/visualization/case_study/002/05_modality_signature.png"
+    },
+    "errors": {}
+  }
+]
