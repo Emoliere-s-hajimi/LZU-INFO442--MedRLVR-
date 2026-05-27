@@ -4,7 +4,7 @@
 
 Every transformation applied to the raw cohort, in execution order, with the justification for each. The cohort is private patient imaging from **Beijing Tiantan Hospital** (234 patients · 2,537 follow-up MRI series · 2012-01 – 2022-12). The Tiantan partners chose a BraTS-2021-compatible *file layout* (T1 / T1ce / T2 / FLAIR per case + optional segmentation, with filenames such as `BraTS2021_<id>_<mod>.nii.gz`) so the pipeline can reuse mature reading recipes — the **data is Tiantan throughout, not BraTS**.
 
-The pipeline is implemented in `src/data/pipeline.py::process_one_case` (and `_process_dicom_case` for the DICOM variant). Per-case decisions are audited in `data/processed/preprocess_report.json` so any reviewer can trace any case from raw to cleaned.
+The pipeline is implemented in `src/data/pipeline.py::process_one_case` (and `_process_dicom_case` for the DICOM variant). Per-case decisions are audited in `data/processed/preprocess_report.json` so any reviewer can trace any case from raw to cleaned. Please read M2&3_data_acquisition&preprocessing.md to find out how to run the data processing codes in detail :)
 
 ---
 
