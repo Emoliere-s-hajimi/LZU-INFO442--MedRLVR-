@@ -245,14 +245,6 @@ ratio is compared against the cohort recurrence (+1.42) vs necrosis
 Cohen's d = 0.94 discriminator from §5 applied to one patient.
 Generator: `case_study_visulization/modality_signature.py`.
 
-### 6.6 Verification
-
-- Pipeline runs end-to-end with **no CLI arguments** on `data/uncleaned_examples/`.
-- Unit-test suite: `pytest tests/ -q` → **13 / 13 passing**.
-- Cleaned-format compatibility: every produced `.npz` matches the schema of `data/some_cleaned_examples/` reference files (same `image / label / affine` array contract, same foreground z-scoring convention).
-- End-to-end training validated on `data/some_cleaned_examples/`: 3-epoch run shows monotonic train + val loss decrease (1.242 → 1.178 train, 1.204 → 1.166 val) and mean Dice 0.198 → 0.264.
-- Case-study renderer: `python -m case_study_visulization.run_case_study --in_dir data/some_cleaned_examples` → **10 figures**, 4.7 MB on disk, ≈ 8 s per case on CPU.
-
 ---
 
 *See `preprocessing.md` for the per-stage transformation log. See `M2_data_aquisition.md` for the extended narrative report.*
