@@ -2,7 +2,7 @@
 
 *INFO 442 — Team 14 · Project BrainTT*
 
-- **Note——updated 5.27.2026: The dataset is too large that even uploading 3 cases is also impossible, so we upload a case with full modalities(case1) and a case with only 2 modalities(case2), and their processed versions in /some_cleaned_examples_small directory. These two cases are actually enough to validate our codes. And due to the confidentiality agreement of the horizontal project, we regret that we are unable to disclose all the data, at least at this time. You can verify this situation with Prof. Zhongfeng Kang.**
+- **Note——updated 5.27.2026: The dataset is too large(totally ~89GB), so we upload a case with full modalities(case1) and a case with only 2 modalities(case2), and their processed versions in /some_cleaned_examples_small directory. Also, we ulpload the /data directory, which contains the necessary data needed to verify our codes. And due to the confidentiality agreement of the horizontal project, we regret that we are unable to disclose all the data, at least at this time. You can verify this situation with Prof. Zhongfeng Kang.**
 
 - **Note——updated 5.12.2026: The dataset was collected and labbled by Tiantan Hospital, Zhulin An and Zhongfeng Kang, and it is totally  sourced ethically, with all private information about patients removed.**
 
