@@ -1,14 +1,15 @@
 # Distinguishing Glioma Recurrence from Radiation Necrosis on Post-Treatment Brain MRI
 
 *INFO 442 — Team 14 · Project BrainTT*
+
+- **Note——updated 5.19.2026: The dataset is too large that even uploading 3 cases is also impossible, so we upload a case with full modalities(case1) and a case with only 2 modalities(case2), and their processed versions in /some_cleaned_examples_small directory.**
+
+- **Note——updated 5.12.2026: The dataset was collected and labbled by Tiantan Hospital, Zhulin An and Zhongfeng Kang, and it is totally  sourced ethically, with all private information about patients removed.**
+
 - **Team Leader: Yutong Wang (ID:320230942461)** — Google Scholar: [https://scholar.google.com/citations?hl=en&authuser=1&user=73MjwF0AAAAJ](https://scholar.google.com/citations?hl=en&authuser=1&user=73MjwF0AAAAJ) Personal Profile: [https://emoilere.github.io/](https://emoilere.github.io/)
 - **Team Members: Zijin Wu(ID:320230942571), Xiaopeng Fan(ID:320230941801), Ye Wang(ID:320230942541), Yunfei Shang(ID:320230942271)**
 
 This is a data-science project carried out in collaboration with the **Institute of Software, Chinese Academy of Sciences (ISCAS)** and **Beijing Tiantan Hospital**, advised by **Prof. Zhulin An (ISCAS) and Prof. Zhongfeng Kang (Lanzhou University)**. **The team has been granted access to a private post-radiation brain-tumor MRI cohort that is not publicly available**, and our goal is to build a clinically useful decision-support pipeline on top of it. 
-
-**Note——updated 5.12.2026: The dataset was collected and labbled by Tiantan Hospital, Zhulin An and Zhongfeng Kang, and it is totally  sourced ethically, with all private information about patients removed.**
-
-**Note——updated 5.19.2026: The dataset is too large that even uploading 3 cases is also impossible, so we upload a case with full modalities(case1) and a case with only 2 modalities(case2), and their processed versions in /some_cleaned_examples_small directory.**
 
 ---
 
