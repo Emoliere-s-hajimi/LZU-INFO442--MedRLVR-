@@ -2,7 +2,7 @@
 
 **INFO 442 · Team 14 · M2 & M3 (Weeks 3–4)**
 
-Please read `M2&3_data_acquisition&preprocessing.md` to find out how to run the data processing codes in detail 
+**Please read `M2&3_data_acquisition&preprocessing.md` to find out how to run the data processing codes in detail :)**
 
 Cleaned cohort: **221 patients · 2,396 MRI series · 15.8 GB** (from a raw 234-patient / 2,537-series / 89.7 GB private Tiantan Hospital cohort, after the 13 invalid IDs are hard-excluded).
 
