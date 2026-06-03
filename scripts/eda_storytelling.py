@@ -32,7 +32,8 @@ from src.analysis.storytelling import run_storytelling  # noqa: E402
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--nifti_root", default="data/uncleaned_examples",
-                        help="BraTS-style NIfTI root. Defaults to data/uncleaned_examples.")
+                        help="Tiantan NIfTI per-case root (BraTS-2021-compatible "
+                             "filenames). Defaults to data/uncleaned_examples.")
     parser.add_argument("--structural_root", default=None,
                         help="Optional DICOM dump root (<MOD>/<class>/<case>/*.dcm).")
     parser.add_argument("--pwi_root", default=None,

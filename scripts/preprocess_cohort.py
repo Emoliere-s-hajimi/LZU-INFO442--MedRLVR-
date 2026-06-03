@@ -2,8 +2,9 @@
 
 Two input shapes are supported:
 
-    --nifti_root <dir>       — BraTS-style per-case folders. Each folder may
-                               contain any subset of {t1, t1ce, t2, flair}
+    --nifti_root <dir>       — Tiantan NIfTI per-case folders, named in a
+                               BraTS-2021-compatible convention. Each folder
+                               may contain any subset of {t1, t1ce, t2, flair}
                                NIfTI files and an optional seg file.
 
     --structural_root <dir>  — DICOM dump in the
@@ -44,7 +45,8 @@ from src.data.pipeline import (  # noqa: E402
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--nifti_root", default="data/uncleaned_examples",
-                        help="BraTS-style NIfTI per-case folder root. "
+                        help="Tiantan NIfTI per-case folder root (filenames follow "
+                             "a BraTS-2021-compatible convention). "
                              "Defaults to data/uncleaned_examples.")
     parser.add_argument("--structural_root", default=None,
                         help="DICOM dump root (<MOD>/<class>/<case>/*.dcm).")
