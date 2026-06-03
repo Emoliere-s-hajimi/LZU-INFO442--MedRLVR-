@@ -1,6 +1,6 @@
 # M4 — Exploratory Data Analysis Report
 
-**INFO 442 · Team 14 · Week 7 · 20% of final grade**
+**INFO 442 · Team 14
 
 Lanzhou University × ISCAS × Beijing Tiantan Hospital
 
@@ -12,7 +12,7 @@ This report presents an analytical EDA of the Tiantan glioma post-radiation coho
 
 The EDA below moves beyond descriptive statistics (covered in M2/M3) to **analytical** questions: which features separate the two classes, how do features interact, and what is the effective dimensionality of the discriminative space. Every visualisation is followed by a written interpretation that ties the observation to a concrete modelling decision.
 
-**Modelling question (final statement).** *Given a post-treatment brain MRI with up to 4 modalities (T1, T1ce, T2, FLAIR) and 4 derived scalar priors (WT volume, sphericity, n_components, T1ce in/out ratio), can we simultaneously (a) classify the lesion as recurrence vs necrosis with AUC > 0.85 and sensitivity > 0.80, and (b) segment the lesion into nested WT ⊇ TC ⊇ ET regions with mean Dice > 0.75, while tolerating the cohort's 22% modality-dropout rate and 3.5:1 class imbalance?*
+**Modelling question.** *Given a post-treatment brain MRI with up to 4 modalities (T1, T1ce, T2, FLAIR) and 4 derived scalar priors (WT volume, sphericity, n_components, T1ce in/out ratio), can we simultaneously (a) classify the lesion as recurrence vs necrosis with AUC > 0.85 and sensitivity > 0.80, and (b) segment the lesion into nested WT ⊇ TC ⊇ ET regions with mean Dice > 0.75, while tolerating the cohort's 22% modality-dropout rate and 3.5:1 class imbalance?*
 
 ---
 
