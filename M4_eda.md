@@ -1,6 +1,6 @@
 # M4 — Exploratory Data Analysis Report
 
-**INFO 442 · Team 14
+**INFO 442 · Team 14**
 
 Lanzhou University × ISCAS × Beijing Tiantan Hospital
 
