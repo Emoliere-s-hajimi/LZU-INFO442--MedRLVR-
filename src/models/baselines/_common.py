@@ -19,7 +19,12 @@ import torch.nn.functional as F
 
 
 def _gn(c: int, max_groups: int = 8) -> nn.GroupNorm:
-    return nn.GroupNorm(max(1, min(max_groups, c // 4)), c)
+    """GroupNorm with a number of groups that divides ``c`` evenly."""
+    # Find the largest valid divisor ≤ max_groups
+    groups = max_groups
+    while groups > 1 and c % groups != 0:
+        groups -= 1
+    return nn.GroupNorm(max(1, groups), c)
 
 
 class BaselineWrapper(nn.Module):
