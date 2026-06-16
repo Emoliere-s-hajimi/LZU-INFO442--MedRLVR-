@@ -1,0 +1,85 @@
+project:
+  name: nr-subproject
+  seed: 442
+  output_dir: ./nr_subproject/outputs/run1
+
+data:
+  # SourcePreprocess_SegLabel_202110 — cleaned NIfTI tree with N/R/RN
+  # class folders. Override on the server via --seg_root.
+  #
+  #   local:  data1/数据集/SourceData/SourcePreprocess_SegLabel_202110
+  #   server: /root/autodm-tmp/SourcePreprocess_SegLabel_202110
+  seg_root: ./data1/数据集/SourceData/SourcePreprocess_SegLabel_202110
+  prefer_revised: true                  # use N（坏死）(修改版）/N over plain N for overlapping IDs
+  processed_dir: ./nr_subproject/processed
+  modalities: [t1, t1ce, t2, flair]
+  patch_size: [128, 128, 128]
+  resample_spacing: [1.0, 1.0, 1.0]
+  intensity_norm: zscore_foreground
+  val_fraction: 0.2                     # stratified by N/R/RN, seed = project.seed
+
+preprocess:
+  drop_if_no_modalities: true
+  drop_if_missing_modality: false
+  zscore_foreground: true
+  fg_threshold: 0.0
+  # SourcePreprocess_SegLabel_202110 never carries FLAIR, and ~60 RN cases
+  # are missing one of t1/t1ce/t2. Instead of zero-filling those channels
+  # we synthesise them from available modalities via the linear recipes
+  # in src/data/pipeline.SYNTH_RECIPES, then let the model treat the
+  # synth channel as a real input (missing_mask = False).
+  synthesize_missing: true
+
+imbalance:
+  strategy: weighted_sampler
+  positive_label: recurrence
+  negative_label: necrosis
+
+model:
+  in_channels: 4
+  num_classes: 2
+  seg_classes: 3
+  base_channels: 32
+  stem_channels: 32
+  deep_supervision: true
+  use_modality_prior: true
+  use_topology_prior: true
+  use_anatomy_prior: true
+  aux_dim: 4
+  modality_dropout_p: 0.15
+
+loss:
+  focal_alpha: 0.25
+  focal_gamma: 2.0
+  seg_focal_alpha: 0.25
+  seg_focal_gamma: 2.0
+  cls_weight: 1.0
+  seg_weight: 1.0
+  log_volume_weight: 0.5
+  nesting_weight: 0.1
+  chi_weight: 0.05
+  class_chi: {0: -24.0, 1: 4.0}
+  default_chi: -3.0
+  ds_weights: [1.0, 0.4, 0.3]
+  class_weights: null
+  seg_channel_weights: null
+
+train:
+  batch_size: 2
+  num_workers: 4
+  epochs: 200
+  optimizer: adamw
+  lr: 2.0e-4
+  weight_decay: 1.0e-5
+  betas: [0.9, 0.999]
+  scheduler: warmup_cosine
+  warmup_epochs: 5
+  amp: true
+  grad_clip: 1.0
+  early_stop_patience: 30
+  use_ema: false
+  ema_decay: 0.999
+
+eval:
+  metrics: [accuracy, auc, f1, sensitivity, specificity, dice]
+  save_predictions: true
