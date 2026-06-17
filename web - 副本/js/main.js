@@ -1,4 +1,5 @@
-// Scroll reveal, nav highlighting, modality-bar fill-in, donut chart.
+// Scroll reveal, nav highlight, donut chart, modality bars.
+// Everything here is lightweight; heavy charts live in lazy modules.
 
 (function () {
   // --- Scroll reveal -------------------------------------------------
@@ -11,35 +12,37 @@
         }
       });
     },
-    { threshold: 0.12 }
+    { threshold: 0.10 }
   );
   document.querySelectorAll(".reveal, .reveal-stagger").forEach((el) => io.observe(el));
 
   // --- Modality bars fill -------------------------------------------
-  const fillIo = new IntersectionObserver((entries) => {
-    entries.forEach((e) => {
-      if (e.isIntersecting) {
-        const pct = Number(e.target.dataset.pct) / 100;
-        e.target.style.transform = `scaleX(${pct})`;
-        fillIo.unobserve(e.target);
-      }
-    });
-  }, { threshold: 0.6 });
+  const fillIo = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((e) => {
+        if (e.isIntersecting) {
+          const pct = Number(e.target.dataset.pct) / 100;
+          e.target.style.transform = `scaleX(${pct})`;
+          fillIo.unobserve(e.target);
+        }
+      });
+    },
+    { threshold: 0.6 }
+  );
   document.querySelectorAll(".modality-bar .fill").forEach((f) => fillIo.observe(f));
 
-  // --- Donut chart for cohort ---------------------------------------
+  // --- Donut chart --------------------------------------------------
   const donut = document.getElementById("donutSvg");
   if (donut) {
     const segments = [
-      { value: 199, color: "#f472b6" }, // R
-      { value: 71,  color: "#a78bfa" }, // RN
-      { value: 52,  color: "#22d3ee" }, // N
+      { value: 199, color: "#f472b6" },
+      { value: 71,  color: "#a78bfa" },
+      { value: 52,  color: "#22d3ee" },
     ];
     const total = segments.reduce((a, b) => a + b.value, 0);
     const cx = 50, cy = 50, r = 38, sw = 14;
     const circumf = 2 * Math.PI * r;
     let offset = 0;
-    // Background track
     const ns = "http://www.w3.org/2000/svg";
     const bg = document.createElementNS(ns, "circle");
     bg.setAttribute("cx", cx); bg.setAttribute("cy", cy); bg.setAttribute("r", r);
@@ -56,7 +59,6 @@
       path.setAttribute("stroke-dasharray", `${arcLen} ${circumf}`);
       path.setAttribute("stroke-dashoffset", -offset);
       path.style.transition = "stroke-dashoffset 0.8s ease, stroke-dasharray 1.2s ease";
-      path.setAttribute("stroke-linecap", "butt");
       path.style.filter = `drop-shadow(0 0 4px ${seg.color}88)`;
       donut.appendChild(path);
       offset += arcLen;
@@ -77,7 +79,7 @@
         }
       });
     },
-    { rootMargin: "-30% 0px -55% 0px", threshold: 0 }
+    { rootMargin: "-35% 0px -55% 0px", threshold: 0 }
   );
   sections.forEach((s) => navIo.observe(s));
 })();

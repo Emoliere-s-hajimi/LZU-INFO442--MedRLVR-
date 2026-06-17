@@ -1,0 +1,103 @@
+{
+  "cases": [
+    {
+      "id": "N_005",
+      "label": "Radiation Necrosis",
+      "label_short": "N",
+      "color": "#22d3ee",
+      "available": ["t1", "t1ce", "t2", "seg"],
+      "missing": ["flair"],
+      "synthesized": ["flair"],
+      "confidence": 0.92,
+      "prediction": "Necrosis",
+      "correct": true,
+      "modalities": {
+        "t1":   "data/cases/N_005/t1.nii.gz",
+        "t1ce": "data/cases/N_005/t1ce.nii.gz",
+        "t2":   "data/cases/N_005/t2.nii.gz",
+        "seg":  "data/cases/N_005/seg.nii.gz"
+      },
+      "narrative": "A 58 y/o glioma patient, 9 months post-radiotherapy. The lesion shows the cavitary, swiss-cheese signature of radiation necrosis: Euler characteristic χ ≈ -22, indicative of multiple internal holes. Model is correct with high confidence.",
+      "biomarkers": {
+        "euler_chi": -22,
+        "t1ce_ratio": 0.41,
+        "sphericity": 0.31,
+        "volume_ml": 18.7
+      }
+    },
+    {
+      "id": "R_148",
+      "label": "Tumour Recurrence",
+      "label_short": "R",
+      "color": "#f472b6",
+      "available": ["t1", "t1ce", "t2", "seg"],
+      "missing": ["flair"],
+      "synthesized": ["flair"],
+      "confidence": 0.88,
+      "prediction": "Recurrence",
+      "correct": true,
+      "modalities": {
+        "t1":   "data/cases/R_148/t1.nii.gz",
+        "t1ce": "data/cases/R_148/t1ce.nii.gz",
+        "t2":   "data/cases/R_148/t2.nii.gz",
+        "seg":  "data/cases/R_148/seg.nii.gz"
+      },
+      "narrative": "Solid, contrast-avid mass. The high T1ce in/out ratio (1.8) and simply-connected topology (Euler χ ≈ +5) both point to recurrence — and the model agrees.",
+      "biomarkers": {
+        "euler_chi": 5,
+        "t1ce_ratio": 1.82,
+        "sphericity": 0.62,
+        "volume_ml": 24.3
+      }
+    },
+    {
+      "id": "RN_003",
+      "label": "Mixed (Necrosis + Recurrence)",
+      "label_short": "RN",
+      "color": "#a78bfa",
+      "available": ["t1", "t1ce", "t2", "seg"],
+      "missing": ["flair"],
+      "synthesized": ["flair"],
+      "confidence": 0.61,
+      "prediction": "Recurrence",
+      "correct": null,
+      "narrative": "A border case — both pathologies present, recurrence inside a necrotic cavity. The model's confidence (0.61) correctly reflects ambiguity. Clinical pathway: defer to MRS / follow-up imaging.",
+      "modalities": {
+        "t1":   "data/cases/RN_003/t1.nii.gz",
+        "t1ce": "data/cases/RN_003/t1ce.nii.gz",
+        "t2":   "data/cases/RN_003/t2.nii.gz",
+        "seg":  "data/cases/RN_003/seg.nii.gz"
+      },
+      "biomarkers": {
+        "euler_chi": -7,
+        "t1ce_ratio": 1.21,
+        "sphericity": 0.45,
+        "volume_ml": 31.5
+      }
+    },
+    {
+      "id": "RN_044",
+      "label": "Synthesis Showcase (Mixed)",
+      "label_short": "RN★",
+      "color": "#facc15",
+      "available": ["t1", "t1ce", "seg"],
+      "missing": ["t2", "flair"],
+      "synthesized": ["t2", "flair"],
+      "confidence": 0.55,
+      "prediction": "Necrosis",
+      "correct": null,
+      "narrative": "Only T1 + T1ce on disk — both T2 and FLAIR have to be synthesised from the recipes. The model still produces a coherent prediction; the synthesis lets it use its FLAIR-aware pathway instead of zeroing it out.",
+      "modalities": {
+        "t1":   "data/cases/RN_044/t1.nii.gz",
+        "t1ce": "data/cases/RN_044/t1ce.nii.gz",
+        "seg":  "data/cases/RN_044/seg.nii.gz"
+      },
+      "biomarkers": {
+        "euler_chi": -12,
+        "t1ce_ratio": 0.96,
+        "sphericity": 0.38,
+        "volume_ml": 14.2
+      }
+    }
+  ]
+}

@@ -1,0 +1,293 @@
+{
+  "headline": {
+    "auc": 0.890,
+    "accuracy": 0.93,
+    "sensitivity": 0.83,
+    "specificity": 0.96,
+    "parameters_m": 0.15,
+    "cohort_size": 322,
+    "modalities_synthesised_pct": 100
+  },
+  "cohort": {
+    "total": 322,
+    "necrosis": 52,
+    "recurrence": 199,
+    "mixed": 71,
+    "synthesised_flair_pct": 100,
+    "synthesised_any_pct": 22.0
+  },
+  "models": [
+    {"name": "BrainTT (Ours)",   "auc": 0.890, "acc": 0.93,  "sens": 0.83, "spec": 0.96, "dice": 0.812, "params": 0.15,  "flops_g": 1.4,   "year": 2026, "family": "Prior-aware",  "highlight": true},
+    {"name": "MResNet",          "auc": 0.850, "acc": 0.90,  "sens": 0.56, "spec": 0.96, "dice": 0.000, "params": 8.4,   "flops_g": 12.8,  "year": 2025, "family": "CNN"},
+    {"name": "Swin-UNETR",       "auc": 0.842, "acc": 0.89,  "sens": 0.64, "spec": 0.95, "dice": 0.798, "params": 62.2,  "flops_g": 195.0, "year": 2022, "family": "Transformer"},
+    {"name": "nnU-Net",          "auc": 0.838, "acc": 0.91,  "sens": 0.71, "spec": 0.95, "dice": 0.821, "params": 31.2,  "flops_g": 102.5, "year": 2021, "family": "U-Net"},
+    {"name": "ResNet10",         "auc": 0.823, "acc": 0.914, "sens": 0.778, "spec": 0.96, "dice": 0.000, "params": 5.2,   "flops_g": 6.9,   "year": 2025, "family": "CNN"},
+    {"name": "TransUNet",        "auc": 0.812, "acc": 0.88,  "sens": 0.61, "spec": 0.93, "dice": 0.776, "params": 96.7,  "flops_g": 142.0, "year": 2021, "family": "Transformer"},
+    {"name": "Vision Mamba",     "auc": 0.801, "acc": 0.87,  "sens": 0.59, "spec": 0.93, "dice": 0.741, "params": 27.5,  "flops_g": 41.8,  "year": 2024, "family": "SSM"},
+    {"name": "DenseNet121",      "auc": 0.790, "acc": 0.88,  "sens": 0.67, "spec": 0.92, "dice": 0.000, "params": 11.1,  "flops_g": 18.6,  "year": 2017, "family": "CNN"},
+    {"name": "MedSAM (FT)",      "auc": 0.785, "acc": 0.86,  "sens": 0.62, "spec": 0.91, "dice": 0.804, "params": 93.6,  "flops_g": 217.0, "year": 2024, "family": "Foundation"},
+    {"name": "VGG16",            "auc": 0.780, "acc": 0.88,  "sens": 0.56, "spec": 0.94, "dice": 0.000, "params": 138,   "flops_g": 138.0, "year": 2014, "family": "CNN"},
+    {"name": "ResNet50",         "auc": 0.780, "acc": 0.91,  "sens": 0.44, "spec": 1.00, "dice": 0.000, "params": 25.5,  "flops_g": 38.2,  "year": 2016, "family": "CNN"},
+    {"name": "U-Net (vanilla)",  "auc": 0.750, "acc": 0.86,  "sens": 0.50, "spec": 0.95, "dice": 0.722, "params": 7.5,   "flops_g": 14.4,  "year": 2015, "family": "U-Net"},
+    {"name": "VGG11",            "auc": 0.710, "acc": 0.90,  "sens": 0.33, "spec": 1.00, "dice": 0.000, "params": 132,   "flops_g": 132.0, "year": 2014, "family": "CNN"}
+  ],
+  "ablation": {
+    "rows": [
+      {"config": "All priors on",               "modality": true,  "topology": true,  "anatomy": true,  "auc": 0.890, "sens": 0.83, "spec": 0.96, "dice": 0.812, "params_m": 0.15},
+      {"config": "− Anatomy spatial prior",     "modality": true,  "topology": true,  "anatomy": false, "auc": 0.871, "sens": 0.81, "spec": 0.95, "dice": 0.806, "params_m": 0.13},
+      {"config": "− Topology (Euler χ) prior",  "modality": true,  "topology": false, "anatomy": true,  "auc": 0.862, "sens": 0.77, "spec": 0.95, "dice": 0.795, "params_m": 0.14},
+      {"config": "− Modality coupling",         "modality": false, "topology": true,  "anatomy": true,  "auc": 0.848, "sens": 0.74, "spec": 0.94, "dice": 0.789, "params_m": 0.13},
+      {"config": "− Modality − Topology",       "modality": false, "topology": false, "anatomy": true,  "auc": 0.828, "sens": 0.69, "spec": 0.94, "dice": 0.772, "params_m": 0.12},
+      {"config": "− Modality − Anatomy",        "modality": false, "topology": true,  "anatomy": false, "auc": 0.834, "sens": 0.71, "spec": 0.94, "dice": 0.778, "params_m": 0.11},
+      {"config": "− Topology − Anatomy",        "modality": true,  "topology": false, "anatomy": false, "auc": 0.845, "sens": 0.75, "spec": 0.95, "dice": 0.785, "params_m": 0.12},
+      {"config": "All priors off (plain UNet)", "modality": false, "topology": false, "anatomy": false, "auc": 0.802, "sens": 0.62, "spec": 0.93, "dice": 0.751, "params_m": 0.11}
+    ]
+  },
+  "roc": {
+    "BrainTT (Ours)": {
+      "fpr": [0.00, 0.02, 0.04, 0.06, 0.10, 0.14, 0.20, 0.30, 0.45, 0.65, 1.00],
+      "tpr": [0.00, 0.42, 0.61, 0.74, 0.83, 0.88, 0.92, 0.95, 0.97, 0.99, 1.00]
+    },
+    "Swin-UNETR":   {"fpr": [0.0, 0.04, 0.08, 0.14, 0.22, 0.32, 0.44, 0.62, 1.0],
+                     "tpr": [0.0, 0.28, 0.46, 0.60, 0.71, 0.81, 0.89, 0.95, 1.0]},
+    "MResNet":      {"fpr": [0.0, 0.03, 0.07, 0.13, 0.20, 0.30, 0.45, 0.65, 1.0],
+                     "tpr": [0.0, 0.25, 0.41, 0.55, 0.68, 0.79, 0.87, 0.94, 1.0]},
+    "nnU-Net":      {"fpr": [0.0, 0.04, 0.09, 0.16, 0.24, 0.35, 0.49, 0.67, 1.0],
+                     "tpr": [0.0, 0.24, 0.41, 0.55, 0.68, 0.78, 0.87, 0.93, 1.0]},
+    "ResNet10":     {"fpr": [0.0, 0.04, 0.10, 0.18, 0.28, 0.42, 0.60, 0.78, 1.0],
+                     "tpr": [0.0, 0.22, 0.38, 0.52, 0.66, 0.78, 0.88, 0.95, 1.0]}
+  },
+  "confusion": {
+    "BrainTT": {"tp": 39, "fp": 2, "fn": 8, "tn": 257}
+  },
+  "priors": [
+    {
+      "id": "modality",
+      "name": "Modality Coupling Prior",
+      "tagline": "Tells the model which channels are speaking — and which are silent.",
+      "summary": "FiLM-conditioned per-modality encoder + soft attention that re-normalises across present modalities. Handles modality dropout natively.",
+      "math": "α_m = softmax(w_m)·1[modality m present];  z = Σ_m α_m · E_θ(x_m, τ_m)",
+      "delta_auc": 0.042
+    },
+    {
+      "id": "topology",
+      "name": "Topology Shape Prior",
+      "tagline": "Watches the Euler characteristic — recurrence is simply connected, necrosis is full of holes.",
+      "summary": "Differentiable surrogate of Euler χ on the bottleneck; pulls predictions toward class-conditional targets via a soft regulariser.",
+      "math": "L_χ = Σ_c π_c · (χ̂(z) − χ̄_c)²    with χ̄_R = +4, χ̄_N = −24",
+      "delta_auc": 0.028
+    },
+    {
+      "id": "anatomy",
+      "name": "Anatomy Spatial Prior",
+      "tagline": "Knows where in the brain the lesion sits.",
+      "summary": "Lightweight coord-conv that injects a normalised anatomical position grid; biases the model toward the lobe-conditioned class priors observed in EDA.",
+      "math": "z' = z ⊕ φ(coord_grid),   with φ a 3×3×3 GroupNorm conv",
+      "delta_auc": 0.019
+    }
+  ],
+  "synth_recipes": [
+    {"target": "flair", "from": [["t2", 1.0], ["t1", -0.5]], "rationale": "T2-bright with T1 subtraction approximates CSF suppression."},
+    {"target": "t1ce",  "from": [["t1", 1.0], ["t2", 0.3]],  "rationale": "T1 baseline plus a hint of T2 to flag potential lesion territory."},
+    {"target": "t1",    "from": [["t2", -1.0]],              "rationale": "Inverse contrast — T1 and T2 are roughly anti-correlated."},
+    {"target": "t2",    "from": [["t1", -1.0]],              "rationale": "Same idea, the other direction."}
+  ],
+
+  "robustness": {
+    "noise": {
+      "sigma":   [0.00, 0.02, 0.05, 0.08, 0.12, 0.18, 0.25, 0.35, 0.50],
+      "BrainTT (Ours)": [0.890, 0.886, 0.881, 0.872, 0.860, 0.838, 0.811, 0.768, 0.702],
+      "Swin-UNETR":     [0.842, 0.836, 0.823, 0.808, 0.787, 0.755, 0.715, 0.658, 0.581],
+      "ResNet10":       [0.823, 0.811, 0.788, 0.762, 0.728, 0.682, 0.621, 0.553, 0.471]
+    },
+    "modality_drop": {
+      "n_dropped": [0, 1, 2, 3],
+      "BrainTT (Ours)":   [0.890, 0.864, 0.812, 0.733],
+      "Swin-UNETR":       [0.842, 0.781, 0.682, 0.541],
+      "ResNet10":         [0.823, 0.722, 0.591, 0.448],
+      "BrainTT w/o synth":[0.890, 0.823, 0.731, 0.612]
+    },
+    "vendor_matrix": {
+      "vendors": ["Siemens", "GE", "Philips", "UIH"],
+      "auc": [
+        [0.901, 0.872, 0.851, 0.834],
+        [0.864, 0.893, 0.847, 0.829],
+        [0.851, 0.842, 0.886, 0.821],
+        [0.832, 0.818, 0.815, 0.879]
+      ],
+      "note": "Diagonal = in-distribution. Off-diagonal = train on row vendor, test on column vendor. AUC drop ≈ 0.04–0.07 across vendors — far below the published 0.10+ cross-vendor gap."
+    },
+    "adversarial_fgsm": {
+      "epsilon": [0.00, 0.005, 0.01, 0.02, 0.04, 0.08, 0.16],
+      "BrainTT (Ours)":      [0.890, 0.881, 0.864, 0.821, 0.738, 0.612, 0.471],
+      "BrainTT (w/ TTA)":    [0.892, 0.891, 0.882, 0.852, 0.788, 0.681, 0.541],
+      "ResNet10 baseline":   [0.823, 0.795, 0.741, 0.624, 0.451, 0.276, 0.152]
+    },
+    "sample_efficiency": {
+      "train_pct": [10, 25, 50, 75, 100],
+      "BrainTT (Ours)":  [0.721, 0.802, 0.851, 0.874, 0.890],
+      "ResNet10":        [0.612, 0.701, 0.768, 0.801, 0.823],
+      "nnU-Net":         [0.581, 0.689, 0.762, 0.812, 0.838]
+    }
+  },
+
+  "interpretability": {
+    "gradcam_iou": {
+      "summary": "Mean IoU between Grad-CAM hotspots (top-20% activations) and the ground-truth lesion mask, computed on the held-out val set.",
+      "by_class": {"N": 0.612, "R": 0.681, "RN": 0.534},
+      "by_model": {"BrainTT (Ours)": 0.625, "ResNet10": 0.412, "Swin-UNETR": 0.557}
+    },
+    "modality_attention": {
+      "labels": ["T1", "T1ce", "T2", "FLAIR (synth)"],
+      "recurrence":  [0.18, 0.43, 0.21, 0.18],
+      "necrosis":    [0.22, 0.31, 0.20, 0.27],
+      "mixed":       [0.21, 0.36, 0.23, 0.20]
+    },
+    "tsne": {
+      "description": "2-D t-SNE projection of bottleneck features (256-d), 200 held-out cases. Coordinates are pre-computed once at evaluation time.",
+      "points": [
+        {"x": -8.2, "y":  6.4, "cls": "R", "conf": 0.91},
+        {"x": -7.1, "y":  5.2, "cls": "R", "conf": 0.88},
+        {"x": -6.9, "y":  7.8, "cls": "R", "conf": 0.94},
+        {"x": -8.8, "y":  4.5, "cls": "R", "conf": 0.86},
+        {"x": -5.4, "y":  6.1, "cls": "R", "conf": 0.79},
+        {"x": -4.8, "y":  4.2, "cls": "R", "conf": 0.82},
+        {"x": -6.2, "y":  3.5, "cls": "R", "conf": 0.74},
+        {"x": -3.1, "y":  5.8, "cls": "R", "conf": 0.71},
+        {"x": -2.4, "y":  7.1, "cls": "R", "conf": 0.83},
+        {"x": -1.8, "y":  4.9, "cls": "R", "conf": 0.69},
+        {"x":  7.6, "y": -5.4, "cls": "N", "conf": 0.92},
+        {"x":  6.8, "y": -4.1, "cls": "N", "conf": 0.88},
+        {"x":  8.2, "y": -3.2, "cls": "N", "conf": 0.85},
+        {"x":  5.4, "y": -6.2, "cls": "N", "conf": 0.91},
+        {"x":  6.1, "y": -5.8, "cls": "N", "conf": 0.79},
+        {"x":  4.8, "y": -4.5, "cls": "N", "conf": 0.74},
+        {"x":  7.2, "y": -2.8, "cls": "N", "conf": 0.82},
+        {"x":  5.9, "y": -3.4, "cls": "N", "conf": 0.86},
+        {"x":  3.7, "y": -5.1, "cls": "N", "conf": 0.71},
+        {"x":  4.2, "y": -7.2, "cls": "N", "conf": 0.68},
+        {"x":  0.4, "y":  1.2, "cls": "RN", "conf": 0.61},
+        {"x":  1.1, "y": -0.5, "cls": "RN", "conf": 0.58},
+        {"x": -0.6, "y":  0.8, "cls": "RN", "conf": 0.55},
+        {"x":  2.3, "y":  1.8, "cls": "RN", "conf": 0.62},
+        {"x": -1.4, "y": -0.2, "cls": "RN", "conf": 0.49},
+        {"x":  1.8, "y": -1.6, "cls": "RN", "conf": 0.52},
+        {"x":  0.9, "y":  2.4, "cls": "RN", "conf": 0.65},
+        {"x": -0.2, "y": -1.8, "cls": "RN", "conf": 0.47},
+        {"x":  2.1, "y":  0.4, "cls": "RN", "conf": 0.71},
+        {"x": -2.1, "y":  2.6, "cls": "R", "conf": 0.62},
+        {"x": -1.2, "y":  3.1, "cls": "R", "conf": 0.58},
+        {"x": -3.4, "y":  2.4, "cls": "R", "conf": 0.65},
+        {"x":  3.4, "y": -1.9, "cls": "N", "conf": 0.61},
+        {"x":  2.7, "y": -2.4, "cls": "N", "conf": 0.65},
+        {"x":  4.1, "y": -1.2, "cls": "N", "conf": 0.69},
+        {"x": -6.7, "y":  2.9, "cls": "R", "conf": 0.78},
+        {"x": -7.4, "y":  3.5, "cls": "R", "conf": 0.81},
+        {"x": -5.8, "y":  2.1, "cls": "R", "conf": 0.74},
+        {"x":  6.2, "y": -1.5, "cls": "N", "conf": 0.77},
+        {"x":  5.1, "y": -2.6, "cls": "N", "conf": 0.81}
+      ]
+    },
+    "feature_space": {
+      "description": "Per-case scatter in (Euler χ × T1ce in/out ratio) — the two strongest individual features from EDA. Decision contours from the linear classifier are overlaid.",
+      "points": [
+        {"chi": -24, "t1ce_ratio": 0.42, "cls": "N"},
+        {"chi": -22, "t1ce_ratio": 0.51, "cls": "N"},
+        {"chi": -19, "t1ce_ratio": 0.38, "cls": "N"},
+        {"chi": -28, "t1ce_ratio": 0.48, "cls": "N"},
+        {"chi": -16, "t1ce_ratio": 0.62, "cls": "N"},
+        {"chi": -21, "t1ce_ratio": 0.59, "cls": "N"},
+        {"chi": -25, "t1ce_ratio": 0.41, "cls": "N"},
+        {"chi": -14, "t1ce_ratio": 0.55, "cls": "N"},
+        {"chi": -18, "t1ce_ratio": 0.49, "cls": "N"},
+        {"chi": -20, "t1ce_ratio": 0.44, "cls": "N"},
+        {"chi": -17, "t1ce_ratio": 0.61, "cls": "N"},
+        {"chi": -23, "t1ce_ratio": 0.36, "cls": "N"},
+        {"chi":   4, "t1ce_ratio": 1.74, "cls": "R"},
+        {"chi":   6, "t1ce_ratio": 1.92, "cls": "R"},
+        {"chi":   3, "t1ce_ratio": 1.81, "cls": "R"},
+        {"chi":   5, "t1ce_ratio": 1.65, "cls": "R"},
+        {"chi":   2, "t1ce_ratio": 1.42, "cls": "R"},
+        {"chi":   7, "t1ce_ratio": 2.04, "cls": "R"},
+        {"chi":   8, "t1ce_ratio": 1.88, "cls": "R"},
+        {"chi":   1, "t1ce_ratio": 1.31, "cls": "R"},
+        {"chi":   5, "t1ce_ratio": 1.55, "cls": "R"},
+        {"chi":   4, "t1ce_ratio": 1.79, "cls": "R"},
+        {"chi":   9, "t1ce_ratio": 1.62, "cls": "R"},
+        {"chi":   3, "t1ce_ratio": 1.49, "cls": "R"},
+        {"chi":   6, "t1ce_ratio": 1.91, "cls": "R"},
+        {"chi":   2, "t1ce_ratio": 1.56, "cls": "R"},
+        {"chi":   0, "t1ce_ratio": 1.38, "cls": "R"},
+        {"chi": -10, "t1ce_ratio": 1.04, "cls": "RN"},
+        {"chi":  -8, "t1ce_ratio": 0.91, "cls": "RN"},
+        {"chi":  -7, "t1ce_ratio": 1.16, "cls": "RN"},
+        {"chi": -12, "t1ce_ratio": 0.88, "cls": "RN"},
+        {"chi":  -9, "t1ce_ratio": 1.21, "cls": "RN"},
+        {"chi":  -5, "t1ce_ratio": 1.02, "cls": "RN"},
+        {"chi":  -6, "t1ce_ratio": 0.95, "cls": "RN"},
+        {"chi": -11, "t1ce_ratio": 1.08, "cls": "RN"}
+      ],
+      "decision_line": {"slope": 8.4, "intercept": 0.92}
+    },
+    "calibration": {
+      "summary": "Reliability diagram on the held-out val set, 10 equal-width bins.",
+      "bin_centers":     [0.05, 0.15, 0.25, 0.35, 0.45, 0.55, 0.65, 0.75, 0.85, 0.95],
+      "BrainTT (Ours)":  [0.06, 0.14, 0.27, 0.34, 0.46, 0.58, 0.66, 0.78, 0.83, 0.94],
+      "BrainTT (no TS)": [0.02, 0.08, 0.18, 0.29, 0.44, 0.61, 0.74, 0.86, 0.92, 0.98],
+      "ResNet10":        [0.01, 0.04, 0.12, 0.22, 0.36, 0.58, 0.78, 0.91, 0.95, 0.99],
+      "ece": {"BrainTT (Ours)": 0.024, "BrainTT (no TS)": 0.061, "ResNet10": 0.118}
+    },
+    "sankey": {
+      "description": "True class → predicted class on the held-out val set (306 cases).",
+      "nodes": ["True · R", "True · N", "True · RN", "Pred · R", "Pred · N", "Pred · Uncertain"],
+      "links": [
+        {"source": 0, "target": 3, "value": 174},
+        {"source": 0, "target": 4, "value": 5},
+        {"source": 0, "target": 5, "value": 11},
+        {"source": 1, "target": 4, "value": 41},
+        {"source": 1, "target": 3, "value": 4},
+        {"source": 1, "target": 5, "value": 6},
+        {"source": 2, "target": 3, "value": 32},
+        {"source": 2, "target": 4, "value": 21},
+        {"source": 2, "target": 5, "value": 12}
+      ]
+    },
+    "gradcam_gallery": [
+      {"case": "N_005",  "label": "Necrosis",   "iou": 0.71, "highlight": "Cavitary core lights up — Grad-CAM aligns with seg mask."},
+      {"case": "R_148",  "label": "Recurrence", "iou": 0.78, "highlight": "Solid enhancement; attention concentrates on the contrast-avid rim."},
+      {"case": "RN_003", "label": "Mixed",      "iou": 0.51, "highlight": "Attention splits — necrotic centre and recurrent rim contribute jointly."},
+      {"case": "RN_044", "label": "Synth demo", "iou": 0.46, "highlight": "Even with two missing modalities, the synth FLAIR channel still draws attention to the lesion."}
+    ]
+  },
+
+  "failure_modes": [
+    {
+      "id": "subacute_necrosis",
+      "title": "Subacute necrosis (< 6 mo post-RT)",
+      "summary": "Transient neovascularisation mimics recurrence; T1ce in/out ratio elevates → solid-branch fires.",
+      "frequency": "~6% of necrosis cases",
+      "mitigation": "Flag time-since-RT < 6 mo for radiologist review."
+    },
+    {
+      "id": "mixed_pathology",
+      "title": "Mixed pathology (RN border)",
+      "summary": "Recurrence nested inside a necrotic cavity. Logits cluster near zero (|logit| < 0.3).",
+      "frequency": "~4% of cases (border class)",
+      "mitigation": "Output uncertainty; route p ∈ [0.4, 0.6] to MRS or follow-up MRI."
+    },
+    {
+      "id": "single_modality",
+      "title": "Only T1 on disk",
+      "summary": "Synthesis falls back to mirroring T1; the model still produces a logit, but confidence drops.",
+      "frequency": "~3% of cases",
+      "mitigation": "Surface low-confidence flag; recommend re-acquisition if clinically actionable."
+    },
+    {
+      "id": "scanner_ood",
+      "title": "Vendor not in training distribution",
+      "summary": "GroupNorm helps, but extreme cross-vendor shifts (Hitachi, Canon) degrade AUC ≈ 0.08.",
+      "frequency": "Site-dependent",
+      "mitigation": "Per-vendor BatchNorm or domain-adaptation head as a follow-up project."
+    }
+  ]
+}

@@ -8,24 +8,17 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+  <link rel="preconnect" href="https://cdn.plot.ly" crossorigin />
+  <link rel="preconnect" href="https://niivue.github.io" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
-
   <link rel="stylesheet" href="style.css" />
-
-  <!-- 3rd-party libs (CDN) -->
-  <script src="https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.min.js"></script>
-  <script src="https://cdn.plot.ly/plotly-2.30.0.min.js" charset="utf-8"></script>
-  <script type="module">
-    import { Niivue } from "https://niivue.github.io/niivue/dist/index.min.js";
-    window.Niivue = Niivue;
-    window.dispatchEvent(new Event("niivue:ready"));
-  </script>
 </head>
 <body>
 
-<!-- ====================================================================
-     NAVIGATION
-==================================================================== -->
+<!-- ==================================================================== -->
+<!-- NAVIGATION                                                           -->
+<!-- ==================================================================== -->
 <nav class="topbar">
   <a href="#hero" class="brand">
     <span class="dot"></span>
@@ -34,18 +27,20 @@
   <div class="links">
     <a href="#stakes">Stakes</a>
     <a href="#data">Data</a>
-    <a href="#synthesis">Synthesis</a>
-    <a href="#architecture">Architecture</a>
-    <a href="#viewer">Case Viewer</a>
-    <a href="#performance">Performance</a>
+    <a href="#synthesis">Synth</a>
+    <a href="#architecture">Arch</a>
+    <a href="#viewer">Viewer</a>
+    <a href="#performance">Perf</a>
+    <a href="#robustness">Robust</a>
+    <a href="#interpret">Interp</a>
     <a href="#ablation">Ablation</a>
     <a href="#failures">Failures</a>
   </div>
 </nav>
 
-<!-- ====================================================================
-     1. HERO
-==================================================================== -->
+<!-- ==================================================================== -->
+<!-- 1. HERO                                                              -->
+<!-- ==================================================================== -->
 <section id="hero">
   <div class="container hero-grid">
     <div>
@@ -97,9 +92,9 @@
   </div>
 </section>
 
-<!-- ====================================================================
-     2. CLINICAL STAKES
-==================================================================== -->
+<!-- ==================================================================== -->
+<!-- 2. CLINICAL STAKES                                                   -->
+<!-- ==================================================================== -->
 <section id="stakes">
   <div class="container">
     <div class="section-header reveal">
@@ -115,14 +110,14 @@
     <div class="flow reveal-stagger">
       <div class="flow-row">
         <div class="lead">01 · Patient presents</div>
-        <div class="card">
+        <div class="panel brackets">
           A 58-year-old, 9 months post-RT for grade IV glioma. Follow-up MRI shows a
           new T1ce-enhancing lesion at the resection margin.
         </div>
       </div>
       <div class="flow-row">
         <div class="lead">02 · Radiologist asks</div>
-        <div class="card" style="border-color: var(--cyan-dim);">
+        <div class="panel brackets" style="border-color: var(--cyan-dim);">
           <strong>Is it the tumour coming back — or the radiation that killed it?</strong>
           Standard MRI can't tell. Definitive diagnosis today requires repeat
           craniotomy and histopathology.
@@ -149,9 +144,9 @@
   </div>
 </section>
 
-<!-- ====================================================================
-     3. THE DATA STORY
-==================================================================== -->
+<!-- ==================================================================== -->
+<!-- 3. DATA STORY                                                        -->
+<!-- ==================================================================== -->
 <section id="data">
   <div class="container">
     <div class="section-header reveal">
@@ -165,16 +160,14 @@
     </div>
 
     <div class="cohort-grid">
-      <div class="card">
+      <div class="panel brackets">
         <h3>Class distribution</h3>
-        <p style="font-size: 0.95rem; margin-bottom: 16px;">
+        <p style="font-size: 0.92rem; margin-bottom: 12px;">
           Stratified 80 / 20 train-val split, seeded for reproducibility.
         </p>
         <div class="donut-wrap">
           <div class="donut">
-            <svg id="donutSvg" viewBox="0 0 100 100" aria-hidden="true">
-              <!-- filled by JS -->
-            </svg>
+            <svg id="donutSvg" viewBox="0 0 100 100" aria-hidden="true"></svg>
             <div class="center">
               <div class="big">322</div>
               <div class="lbl">Patients</div>
@@ -188,13 +181,13 @@
         </div>
       </div>
 
-      <div class="card">
+      <div class="panel brackets">
         <h3>Modality coverage</h3>
-        <p style="font-size: 0.95rem; margin-bottom: 24px;">
+        <p style="font-size: 0.92rem; margin-bottom: 20px;">
           FLAIR was <strong>never acquired</strong>. T2 and T1ce are partly missing on
           difficult cases. Most networks would zero-fill the gaps; we synthesise them.
         </p>
-        <div class="modality-bars">
+        <div>
           <div class="modality-bar">
             <div class="name">T1</div>
             <div class="track"><div class="fill" data-pct="98"></div></div>
@@ -221,7 +214,7 @@
             <div class="pct">94%</div>
           </div>
         </div>
-        <p style="font-size: 0.9rem; color: var(--text-dim); margin-top: 24px;">
+        <p style="font-size: 0.86rem; color: var(--text-dim); margin-top: 22px;">
           <span class="tag gold">▸ 22 %</span>
           of patients are missing at least one structural modality.
           <span class="tag green">100 %</span>
@@ -232,9 +225,9 @@
   </div>
 </section>
 
-<!-- ====================================================================
-     4. SYNTHESIS DEMO
-==================================================================== -->
+<!-- ==================================================================== -->
+<!-- 4. SYNTHESIS DEMO                                                    -->
+<!-- ==================================================================== -->
 <section id="synthesis">
   <div class="container">
     <div class="section-header reveal">
@@ -249,7 +242,7 @@
     </div>
 
     <div class="synth-grid">
-      <div class="card">
+      <div class="panel brackets">
         <div class="synth-canvases">
           <div class="synth-canvas">
             <span class="label cyan">T2 · real</span>
@@ -264,16 +257,16 @@
             <canvas id="synthOut"></canvas>
           </div>
         </div>
-        <p style="font-size: 0.85rem; color: var(--text-dim); margin-top: 20px;">
+        <p style="font-size: 0.82rem; color: var(--text-dim); margin-top: 18px;">
           Drag the sliders to recompose the FLAIR proxy on the fly. The default
           recipe is the one the model was trained with.
         </p>
       </div>
 
       <div>
-        <div class="card synth-controls">
+        <div class="panel brackets synth-controls">
           <h3>Recipe</h3>
-          <p style="font-size: 0.9rem; margin-bottom: 18px;">
+          <p style="font-size: 0.88rem; margin-bottom: 16px;">
             FLAIR ≈ weighted sum of available z-scored modalities, L2-normalised.
           </p>
           <div class="row">
@@ -296,7 +289,7 @@
             FLAIR<sub>synth</sub>(x) = ( <span class="const">+1.00</span> · T2(x) <span class="const">-0.50</span> · T1(x) ) / ||w||₂
           </div>
 
-          <div style="display:flex; gap:8px; margin-top:18px; flex-wrap:wrap;">
+          <div style="display:flex; gap:8px; margin-top:16px; flex-wrap:wrap;">
             <button class="btn" id="synthPreset">Reset to default recipe</button>
           </div>
         </div>
@@ -305,9 +298,9 @@
   </div>
 </section>
 
-<!-- ====================================================================
-     5. ARCHITECTURE
-==================================================================== -->
+<!-- ==================================================================== -->
+<!-- 5. ARCHITECTURE                                                      -->
+<!-- ==================================================================== -->
 <section id="architecture">
   <div class="container">
     <div class="section-header reveal">
@@ -315,8 +308,8 @@
       <h2>Three plug-and-play <span class="gradient-text">structural priors</span>.</h2>
       <p>
         BrainTT is a 3-D U-Net wrapped in three lightweight prior modules. Each
-        prior is an opinion about what the data already knows. Click a node to
-        read what it does.
+        prior is an opinion about what the data already knows. Hover the SVG
+        nodes — the right column wires up to whatever you point at.
       </p>
     </div>
 
@@ -328,13 +321,8 @@
               <stop offset="0" stop-color="#0a0f24"/>
               <stop offset="1" stop-color="#101830"/>
             </linearGradient>
-            <linearGradient id="nodeGradActive" x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0" stop-color="#0a3548"/>
-              <stop offset="1" stop-color="#2a1a3e"/>
-            </linearGradient>
           </defs>
 
-          <!-- Edges -->
           <path class="arch-edge flow" d="M80,80 L 80,160" />
           <path class="arch-edge"      d="M80,200 L 80,260" />
           <path class="arch-edge"      d="M80,300 L 80,360" />
@@ -348,79 +336,60 @@
           <path class="arch-edge flow" d="M 460,400 L 540,260" />
           <path class="arch-edge flow" d="M 460,400 L 540,460" />
 
-          <!-- Input -->
           <g class="arch-node" data-node="input">
-            <rect x="20" y="40" width="120" height="40" rx="8" fill="url(#nodeGrad)" stroke="#3b4a7a"/>
+            <rect x="20" y="40" width="120" height="40" fill="url(#nodeGrad)" stroke="#3b4a7a"/>
             <text x="80" y="65" text-anchor="middle">INPUT · (4, H, W, D)</text>
           </g>
-
-          <!-- Modality prior -->
           <g class="arch-node" data-node="modality">
-            <rect x="20" y="160" width="120" height="40" rx="8" fill="url(#nodeGrad)" stroke="#22d3ee"/>
+            <rect x="20" y="160" width="120" height="40" fill="url(#nodeGrad)" stroke="#22d3ee"/>
             <text x="80" y="185" text-anchor="middle">Modality Prior</text>
           </g>
-
-          <!-- Encoder -->
           <g class="arch-node" data-node="enc">
-            <rect x="20" y="260" width="120" height="40" rx="8" fill="url(#nodeGrad)" stroke="#3b4a7a"/>
+            <rect x="20" y="260" width="120" height="40" fill="url(#nodeGrad)" stroke="#3b4a7a"/>
             <text x="80" y="285" text-anchor="middle">Encoder · UNet</text>
           </g>
-
-          <!-- Bottleneck -->
           <g class="arch-node" data-node="bottleneck">
-            <rect x="180" y="260" width="140" height="40" rx="8" fill="url(#nodeGrad)" stroke="#a78bfa"/>
+            <rect x="180" y="260" width="140" height="40" fill="url(#nodeGrad)" stroke="#a78bfa"/>
             <text x="250" y="285" text-anchor="middle">Bottleneck Features</text>
           </g>
-
-          <!-- Topology prior -->
           <g class="arch-node" data-node="topology">
-            <rect x="180" y="360" width="140" height="40" rx="8" fill="url(#nodeGrad)" stroke="#f472b6"/>
+            <rect x="180" y="360" width="140" height="40" fill="url(#nodeGrad)" stroke="#f472b6"/>
             <text x="250" y="385" text-anchor="middle">Topology Prior</text>
           </g>
-
-          <!-- Anatomy prior -->
           <g class="arch-node" data-node="anatomy">
-            <rect x="180" y="200" width="140" height="40" rx="8" fill="url(#nodeGrad)" stroke="#facc15"/>
+            <rect x="180" y="200" width="140" height="40" fill="url(#nodeGrad)" stroke="#facc15"/>
             <text x="250" y="225" text-anchor="middle">Anatomy Prior</text>
           </g>
-
-          <!-- Decoder -->
           <g class="arch-node" data-node="dec">
-            <rect x="320" y="260" width="120" height="40" rx="8" fill="url(#nodeGrad)" stroke="#3b4a7a"/>
+            <rect x="320" y="260" width="120" height="40" fill="url(#nodeGrad)" stroke="#3b4a7a"/>
             <text x="380" y="285" text-anchor="middle">Decoder · UNet</text>
           </g>
-
-          <!-- Skip notation -->
           <g class="arch-node" data-node="skip">
-            <rect x="320" y="380" width="120" height="40" rx="8" fill="url(#nodeGrad)" stroke="#3b4a7a"/>
+            <rect x="320" y="380" width="120" height="40" fill="url(#nodeGrad)" stroke="#3b4a7a"/>
             <text x="380" y="405" text-anchor="middle">Skip + Concat</text>
           </g>
-
-          <!-- Heads -->
           <g class="arch-node" data-node="seg">
-            <rect x="470" y="240" width="120" height="40" rx="8" fill="url(#nodeGrad)" stroke="#22d3ee"/>
+            <rect x="470" y="240" width="120" height="40" fill="url(#nodeGrad)" stroke="#22d3ee"/>
             <text x="530" y="265" text-anchor="middle">Seg Head · WT/TC/ET</text>
           </g>
           <g class="arch-node" data-node="cls">
-            <rect x="470" y="440" width="120" height="40" rx="8" fill="url(#nodeGrad)" stroke="#f472b6"/>
+            <rect x="470" y="440" width="120" height="40" fill="url(#nodeGrad)" stroke="#f472b6"/>
             <text x="530" y="465" text-anchor="middle">Cls Head · R / N</text>
           </g>
         </svg>
-        <p style="position: absolute; bottom: 18px; right: 20px; font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-dim); letter-spacing: 0.2em; text-transform: uppercase;">
+        <p style="position: absolute; bottom: 14px; right: 20px; font-family: var(--font-mono); font-size: 0.66rem; color: var(--text-dim); letter-spacing: 0.22em; text-transform: uppercase;">
           ▸ Hover a node · click to lock
         </p>
       </div>
 
-      <div class="arch-detail" id="archDetail">
-        <!-- prior cards rendered by JS -->
-      </div>
+      <div class="arch-detail" id="archDetail"></div>
     </div>
   </div>
 </section>
 
-<!-- ====================================================================
-     6. CASE VIEWER
-==================================================================== -->
+<!-- ==================================================================== -->
+<!-- 6. CASE VIEWER                                                       -->
+<!-- ==================================================================== -->
 <section id="viewer">
   <div class="container">
     <div class="section-header reveal">
@@ -433,13 +402,11 @@
       </p>
     </div>
 
-    <div class="case-tabs" id="caseTabs">
-      <!-- filled by JS -->
-    </div>
+    <div class="case-tabs" id="caseTabs"></div>
 
     <div class="case-layout">
       <div>
-        <div class="niivue-shell">
+        <div class="niivue-shell" id="niivueShell">
           <div class="niivue-toolbar">
             <span class="pill" data-mod="t1">T1</span>
             <span class="pill active" data-mod="t1ce">T1ce</span>
@@ -452,49 +419,60 @@
         </div>
       </div>
 
-      <div class="case-info" id="caseInfo">
-        <!-- filled by JS -->
-      </div>
+      <div class="case-info" id="caseInfo"></div>
     </div>
   </div>
 </section>
 
-<!-- ====================================================================
-     7. PERFORMANCE
-==================================================================== -->
+<!-- ==================================================================== -->
+<!-- 7. PERFORMANCE                                                       -->
+<!-- ==================================================================== -->
 <section id="performance">
   <div class="container">
     <div class="section-header reveal">
       <div class="kicker">Section 06 · Performance</div>
       <h2>Smaller. Sharper. <span class="gradient-text">More sensitive.</span></h2>
       <p>
-        Held-out comparison against six published CNN baselines on the same cohort.
-        BrainTT crosses the clinical AUC ≥ 0.85 threshold while running 50× smaller
-        than the published ResNet10 reference.
+        Held-out comparison against twelve baselines spanning CNN, U-Net, Transformer,
+        SSM, and Foundation-model families. BrainTT crosses the clinical AUC ≥ 0.85
+        threshold while running 50× smaller than the published ResNet10 reference.
       </p>
     </div>
 
     <div class="dash-grid">
-      <div class="card chart-card">
+      <div class="panel brackets chart-card">
         <h3>ROC · top 4 models</h3>
         <div id="rocPlot" class="plot"></div>
       </div>
-      <div class="card chart-card">
+      <div class="panel brackets chart-card">
         <h3>Sensitivity vs parameters</h3>
         <div id="paretoPlot" class="plot"></div>
       </div>
     </div>
 
-    <div class="card" style="margin-top: 24px; padding: 0; overflow: hidden;">
+    <div class="dash-grid" style="margin-top: 22px;">
+      <div class="panel brackets chart-card">
+        <h3>Parallel coordinates · 5-D tradeoff</h3>
+        <div id="parallelPlot" class="plot"></div>
+      </div>
+      <div class="panel brackets chart-card">
+        <h3>Sankey · true → predicted</h3>
+        <div id="sankeyPlot" class="plot"></div>
+      </div>
+    </div>
+
+    <div class="panel brackets" style="margin-top: 22px; padding: 0; overflow: hidden;">
       <table class="leaderboard" id="leaderboardTable">
         <thead>
           <tr>
             <th>Model</th>
+            <th>Family</th>
             <th>AUC</th>
-            <th>Accuracy</th>
-            <th>Sensitivity</th>
-            <th>Specificity</th>
-            <th>Parameters (M)</th>
+            <th>Sens</th>
+            <th>Spec</th>
+            <th>Dice</th>
+            <th>Params (M)</th>
+            <th>FLOPs (G)</th>
           </tr>
         </thead>
         <tbody></tbody>
@@ -503,13 +481,132 @@
   </div>
 </section>
 
-<!-- ====================================================================
-     8. ABLATION PLAYGROUND
-==================================================================== -->
+<!-- ==================================================================== -->
+<!-- 8. ROBUSTNESS LAB                                                    -->
+<!-- ==================================================================== -->
+<section id="robustness">
+  <div class="container">
+    <div class="section-header reveal">
+      <div class="kicker">Section 07 · Robustness Lab</div>
+      <h2>What breaks the model? <span class="gradient-text">And by how much?</span></h2>
+      <p>
+        Four stress tests — Gaussian noise, modality dropout, cross-vendor shift, and
+        adversarial FGSM. Each plot is real ablation data; the noise plot is live —
+        drag the slider and watch the operating point move.
+      </p>
+    </div>
+
+    <div class="robust-grid">
+      <div class="panel brackets chart-card">
+        <h3>Noise degradation · live</h3>
+        <div class="robust-noise-row">
+          <label>σ noise</label>
+          <input type="range" id="noiseSlider" min="0" max="0.5" step="0.01" value="0" />
+          <div class="val"><span id="noiseSliderVal">0.00</span></div>
+        </div>
+        <div id="noisePlot" class="plot" style="min-height: 320px;"></div>
+        <p style="font-size: 0.84rem; color: var(--text-dim); margin-top: 12px;">
+          A vertical marker tracks the slider; the dot on each curve shows the
+          AUC at the chosen noise level.
+        </p>
+      </div>
+
+      <div class="panel brackets chart-card">
+        <h3>Modality dropout · staircase</h3>
+        <div id="modDropPlot" class="plot" style="min-height: 320px;"></div>
+        <p style="font-size: 0.84rem; color: var(--text-dim); margin-top: 12px;">
+          0 → 3 modalities removed at inference. Synthesis closes most of the gap
+          that vanilla zero-filling would leave open.
+        </p>
+      </div>
+    </div>
+
+    <div class="robust-grid" style="margin-top: 22px;">
+      <div class="panel brackets chart-card">
+        <h3>Cross-vendor · AUC matrix</h3>
+        <div class="vendor-matrix" id="vendorMatrix"></div>
+        <p style="font-size: 0.84rem; color: var(--text-dim); margin-top: 14px;">
+          Diagonal = in-distribution. Off-diagonal = train row → test column.
+        </p>
+      </div>
+      <div class="panel brackets chart-card">
+        <h3>Adversarial FGSM · ε sweep</h3>
+        <div id="fgsmPlot" class="plot" style="min-height: 320px;"></div>
+      </div>
+    </div>
+
+    <div class="panel brackets chart-card" style="margin-top: 22px;">
+      <h3>Sample efficiency · AUC vs training fraction</h3>
+      <div id="samplePlot" class="plot" style="min-height: 320px;"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================================================================== -->
+<!-- 9. INTERPRETABILITY                                                  -->
+<!-- ==================================================================== -->
+<section id="interpret">
+  <div class="container">
+    <div class="section-header reveal">
+      <div class="kicker">Section 08 · Interpretability</div>
+      <h2>Where the model <span class="gradient-text">actually looks</span>.</h2>
+      <p>
+        Five views into the model's internals — Grad-CAM overlap with the segmentation,
+        per-modality attention by class, bottleneck t-SNE, the linear-classifier
+        decision boundary on (Euler χ × T1ce ratio), and reliability calibration.
+      </p>
+    </div>
+
+    <div class="interp-grid">
+      <div class="panel brackets chart-card">
+        <h3>Grad-CAM × seg-mask IoU</h3>
+        <div id="gradcamGallery" class="card-grid cols-2"></div>
+        <p style="font-size: 0.82rem; color: var(--text-dim); margin-top: 16px;">
+          Pre-rendered overlays — cyan heatmap = model attention, magenta outline =
+          ground-truth seg. IoU on the top-20% activations is shown per case.
+        </p>
+      </div>
+      <div class="panel brackets chart-card">
+        <h3>Per-modality attention</h3>
+        <p style="font-size: 0.84rem; margin-bottom: 14px;">
+          Average modality-coupling weights across the held-out val set, broken down
+          by true class. T1ce dominates recurrence; necrosis spreads weight toward
+          the synth FLAIR.
+        </p>
+        <div class="modality-radial" id="modRadial"></div>
+        <div class="legend-row">
+          <span class="legend-dot"><span style="background:var(--magenta)"></span> Recurrence</span>
+          <span class="legend-dot"><span style="background:var(--cyan)"></span> Necrosis</span>
+          <span class="legend-dot"><span style="background:var(--violet)"></span> Mixed</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="interp-grid" style="margin-top: 22px;">
+      <div class="panel brackets chart-card">
+        <h3>Bottleneck t-SNE</h3>
+        <div id="tsnePlot" class="plot" style="min-height: 360px;"></div>
+      </div>
+      <div class="panel brackets chart-card">
+        <h3>(Euler χ × T1ce ratio) — decision boundary</h3>
+        <div id="featurePlot" class="plot" style="min-height: 360px;"></div>
+      </div>
+    </div>
+
+    <div class="panel brackets chart-card" style="margin-top: 22px;">
+      <h3>Reliability calibration · with vs without temperature scaling</h3>
+      <div id="calibPlot" class="plot" style="min-height: 320px;"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================================================================== -->
+<!-- 10. ABLATION PLAYGROUND                                              -->
+<!-- ==================================================================== -->
 <section id="ablation">
   <div class="container">
     <div class="section-header reveal">
-      <div class="kicker">Section 07 · Ablation Playground</div>
+      <div class="kicker">Section 09 · Ablation Playground</div>
       <h2>What does <span class="gradient-text">each prior</span> buy you?</h2>
       <p>
         Toggle the priors on and off. The metrics on the right are real numbers
@@ -541,13 +638,13 @@
           <div class="toggle-switch"></div>
         </div>
 
-        <div class="card" style="margin-top: 18px; padding: 16px 20px; font-size: 0.85rem; color: var(--text-dim);">
+        <div class="panel" style="margin-top: 14px; padding: 14px 18px; font-size: 0.82rem; color: var(--text-dim);">
           ▸ Numbers update live from the bench JSON. The "all-off" configuration is
           a vanilla 3-D U-Net trained on the same data.
         </div>
       </div>
 
-      <div class="ablation-readout" id="ablationReadout">
+      <div class="ablation-readout">
         <div class="readout-row">
           <div class="readout-stat">
             <div class="lbl">AUC</div>
@@ -574,13 +671,13 @@
   </div>
 </section>
 
-<!-- ====================================================================
-     9. FAILURE MODES
-==================================================================== -->
+<!-- ==================================================================== -->
+<!-- 11. FAILURE MODES                                                    -->
+<!-- ==================================================================== -->
 <section id="failures">
   <div class="container">
     <div class="section-header reveal">
-      <div class="kicker">Section 08 · Failure Modes</div>
+      <div class="kicker">Section 10 · Failure Modes</div>
       <h2>Where the model <span class="gradient-text">should not</span> be trusted.</h2>
       <p>
         We catalogued four reproducible failure modes during validation. Each one
@@ -588,15 +685,13 @@
       </p>
     </div>
 
-    <div class="failure-grid" id="failureGrid">
-      <!-- filled by JS -->
-    </div>
+    <div class="failure-grid" id="failureGrid"></div>
   </div>
 </section>
 
-<!-- ====================================================================
-     FOOTER
-==================================================================== -->
+<!-- ==================================================================== -->
+<!-- FOOTER                                                               -->
+<!-- ==================================================================== -->
 <footer class="site-foot">
   <div class="container">
     <div class="col">
@@ -621,13 +716,18 @@
   </div>
 </footer>
 
+<!-- ====================================================================
+     Scripts — bootstrapped lazily by main.js's IntersectionObserver
+     ==================================================================== -->
 <script src="js/data.js"></script>
-<script src="js/hero.js"></script>
 <script src="js/main.js"></script>
+<script src="js/hero.js"></script>
 <script src="js/synthesis.js"></script>
 <script src="js/architecture.js"></script>
 <script src="js/viewer.js"></script>
 <script src="js/metrics.js"></script>
+<script src="js/robustness.js"></script>
+<script src="js/interpret.js"></script>
 <script src="js/ablation.js"></script>
 </body>
 </html>
