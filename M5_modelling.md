@@ -1,6 +1,6 @@
 # M5 — Data Modelling & Visualisation Report
 
-**INFO 442 · Team 14 · Week 8
+**INFO 442 · Team 14 · Week 8 · 20 % of final grade**
 
 Lanzhou University × ISCAS × Beijing Tiantan Hospital
 
@@ -11,7 +11,7 @@ Lanzhou University × ISCAS × Beijing Tiantan Hospital
 This report presents the modelling layer of **BrainTT** — a prior-aware
 deep-learning engine for telling **glioma recurrence** apart from **radiation
 necrosis** on post-radiotherapy brain MRI. We trained on the cleaned Tiantan
-cohort and ran
+cohort (**234 patients · 322 case folders**, 3 pathology classes) and ran
 a five-way evaluation:
 
 1. **Discrimination** against twelve baselines spanning CNN, U-Net,
