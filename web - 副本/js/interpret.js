@@ -1,5 +1,6 @@
 // Interpretability section — 5 views:
-//   1) Grad-CAM gallery — canvas-drawn heatmap × outline overlay
+//   1) Grad-CAM gallery — pre-rendered PNGs from web/data/gradcam/, made
+//      by web/data/_make_gradcam_overlays.py on the real cohort cases.
 //   2) Per-modality attention — conic-gradient "radial bars" (pure CSS)
 //   3) Bottleneck t-SNE scatter
 //   4) (Euler χ × T1ce ratio) feature space with decision boundary
@@ -9,107 +10,26 @@
   const section = document.getElementById("interpret");
   if (!section) return;
 
-  // ============================================================
-  // 1) Grad-CAM gallery — synthetic-but-plausible heatmaps drawn
-  //    to canvas. Each thumb uses a different seed to look unique.
-  // ============================================================
   const gallery = document.getElementById("gradcamGallery");
-
-  function drawGradcam(canvas, opts) {
-    // opts: { color: [r,g,b], hot: [{x,y,r,intensity}, ...], outline: [...] }
-    const W = canvas.width = canvas.offsetWidth || 320;
-    const H = canvas.height = canvas.offsetHeight || 320;
-    const ctx = canvas.getContext("2d");
-
-    // 1) faint brain-shaped background
-    const bg = ctx.createRadialGradient(W * 0.5, H * 0.5, W * 0.08, W * 0.5, H * 0.5, W * 0.55);
-    bg.addColorStop(0, "rgba(70, 90, 120, 0.55)");
-    bg.addColorStop(0.5, "rgba(40, 50, 80, 0.35)");
-    bg.addColorStop(1, "rgba(5, 8, 22, 0)");
-    ctx.fillStyle = bg;
-    ctx.beginPath();
-    ctx.ellipse(W * 0.5, H * 0.5, W * 0.45, H * 0.4, 0, 0, Math.PI * 2);
-    ctx.fill();
-
-    // 2) "anatomical" noise — sparse white dots
-    const seed = opts.seed || 1;
-    let s = seed;
-    function rand() { s = (s * 9301 + 49297) % 233280; return s / 233280; }
-    ctx.fillStyle = "rgba(180, 200, 230, 0.10)";
-    for (let i = 0; i < 600; i++) {
-      const x = rand() * W, y = rand() * H;
-      const dx = x - W / 2, dy = y - H / 2;
-      if ((dx * dx) / (W * 0.43) ** 2 + (dy * dy) / (H * 0.38) ** 2 > 1) continue;
-      ctx.fillRect(x, y, 1, 1);
-    }
-
-    // 3) Grad-CAM hotspots (additive blending)
-    ctx.globalCompositeOperation = "lighter";
-    const [hr, hg, hb] = opts.color;
-    opts.hot.forEach(({ x, y, r, intensity }) => {
-      const grad = ctx.createRadialGradient(x * W, y * H, 0, x * W, y * H, r * W);
-      grad.addColorStop(0, `rgba(${hr},${hg},${hb},${intensity})`);
-      grad.addColorStop(0.5, `rgba(${hr},${hg},${hb},${intensity * 0.45})`);
-      grad.addColorStop(1, `rgba(${hr},${hg},${hb},0)`);
-      ctx.fillStyle = grad;
-      ctx.fillRect(0, 0, W, H);
-    });
-    ctx.globalCompositeOperation = "source-over";
-
-    // 4) Seg outline (magenta closed curve roughly enclosing the hotspot)
-    if (opts.outline) {
-      ctx.strokeStyle = "rgba(244, 114, 182, 0.85)";
-      ctx.lineWidth = 1.5;
-      ctx.beginPath();
-      opts.outline.forEach((p, i) => {
-        const x = p[0] * W, y = p[1] * H;
-        if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
-      });
-      ctx.closePath();
-      ctx.stroke();
-    }
-  }
-
-  function makePolygon(cx, cy, r, n, jitter, seed) {
-    let s = seed; function rand() { s = (s * 9301 + 49297) % 233280; return s / 233280; }
-    const pts = [];
-    for (let i = 0; i < n; i++) {
-      const a = (i / n) * Math.PI * 2;
-      const rad = r * (1 + (rand() - 0.5) * jitter);
-      pts.push([cx + Math.cos(a) * rad, cy + Math.sin(a) * rad]);
-    }
-    return pts;
-  }
 
   BrainTT.lazy(section, async () => {
     const { metrics } = await BrainTT.dataPromise;
 
-    // -------- 1) Grad-CAM gallery -------------------------------
+    // -------- 1) Grad-CAM gallery (real PNG overlays) ----------
     if (gallery && metrics.interpretability.gradcam_gallery) {
-      const recipes = [
-        { color: [34, 211, 238], cx: 0.45, cy: 0.55, r: 0.18, seed: 11 },  // necrosis
-        { color: [244, 114, 182], cx: 0.55, cy: 0.42, r: 0.14, seed: 23 }, // recurrence
-        { color: [167, 139, 250], cx: 0.50, cy: 0.50, r: 0.22, seed: 31 }, // mixed
-        { color: [250, 204, 21], cx: 0.42, cy: 0.62, r: 0.16, seed: 47 },  // synth demo
-      ];
-      gallery.innerHTML = metrics.interpretability.gradcam_gallery.map((g, i) => `
-        <div class="gradcam-thumb">
-          <canvas data-thumb="${i}"></canvas>
+      gallery.innerHTML = metrics.interpretability.gradcam_gallery.map((g) => `
+        <div class="gradcam-thumb" data-case="${g.case}" title="Click to open ${g.case} in the case viewer">
+          <img src="data/gradcam/${g.case}.png" alt="Grad-CAM overlay for ${g.case}" loading="lazy" />
           <div class="meta">${g.case} · ${g.label} <span class="iou">IoU ${g.iou.toFixed(2)}</span></div>
         </div>
       `).join("");
-      gallery.querySelectorAll("canvas").forEach((c, i) => {
-        const r = recipes[i];
-        const outline = makePolygon(r.cx, r.cy, r.r + 0.04, 22, 0.22, r.seed + 100);
-        drawGradcam(c, {
-          color: r.color,
-          seed: r.seed,
-          outline,
-          hot: [
-            { x: r.cx, y: r.cy, r: r.r,        intensity: 0.55 },
-            { x: r.cx + 0.05, y: r.cy - 0.04, r: r.r * 0.6, intensity: 0.45 },
-            { x: r.cx - 0.06, y: r.cy + 0.03, r: r.r * 0.5, intensity: 0.30 },
-          ],
+      gallery.querySelectorAll(".gradcam-thumb").forEach((el) => {
+        el.addEventListener("click", () => {
+          const id = el.dataset.case;
+          if (!id) return;
+          document.dispatchEvent(new CustomEvent("braintt:openCase", { detail: id }));
+          const viewer = document.getElementById("viewer");
+          if (viewer) viewer.scrollIntoView({ behavior: "smooth" });
         });
       });
     }

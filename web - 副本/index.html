@@ -27,12 +27,15 @@
   <div class="links">
     <a href="#stakes">Stakes</a>
     <a href="#data">Data</a>
+    <a href="#explorer">Explorer</a>
     <a href="#synthesis">Synth</a>
     <a href="#architecture">Arch</a>
     <a href="#viewer">Viewer</a>
     <a href="#performance">Perf</a>
+    <a href="#console">Console</a>
     <a href="#robustness">Robust</a>
     <a href="#interpret">Interp</a>
+    <a href="#sandbox">Sandbox</a>
     <a href="#ablation">Ablation</a>
     <a href="#failures">Failures</a>
   </div>
@@ -45,7 +48,7 @@
   <div class="container hero-grid">
     <div>
       <div class="hero-eyebrow">
-        Brain MRI <span class="blink">▮</span> Post-RT Glioma <span class="blink">▮</span> 322 patients
+        Brain MRI <span class="blink">▮</span> Post-RT Glioma <span class="blink">▮</span> 234 patients · 322 cases
       </div>
       <h1 class="hero-title">
         Necrosis<br/>
@@ -75,8 +78,8 @@
           <div class="lbl">Parameters</div>
         </div>
         <div class="hero-stat">
-          <div class="num" id="stat-cohort">322</div>
-          <div class="lbl">Patients</div>
+          <div class="num" id="stat-cohort">234</div>
+          <div class="lbl">Patients · 322 cases</div>
         </div>
       </div>
     </div>
@@ -151,26 +154,27 @@
   <div class="container">
     <div class="section-header reveal">
       <div class="kicker">Section 02 · The Data Story</div>
-      <h2>322 patients. <span class="gradient-text">Always</span> missing FLAIR.</h2>
+      <h2>234 patients. <span class="gradient-text">Always</span> missing FLAIR.</h2>
       <p>
         The cleaned Tiantan Hospital cohort ships as a per-patient NIfTI tree
-        with three pathology classes — and a missing-modality problem we couldn't
-        engineer around.
+        with three pathology classes — 234 unique patients across 322 case folders
+        (some with multi-timepoint scans) — and a missing-modality problem we
+        couldn't engineer around.
       </p>
     </div>
 
     <div class="cohort-grid">
       <div class="panel brackets">
-        <h3>Class distribution</h3>
+        <h3>Class distribution · 322 cases</h3>
         <p style="font-size: 0.92rem; margin-bottom: 12px;">
-          Stratified 80 / 20 train-val split, seeded for reproducibility.
+          Stratified 80 / 20 case-level split, seeded for reproducibility.
         </p>
         <div class="donut-wrap">
           <div class="donut">
             <svg id="donutSvg" viewBox="0 0 100 100" aria-hidden="true"></svg>
             <div class="center">
-              <div class="big">322</div>
-              <div class="lbl">Patients</div>
+              <div class="big">234</div>
+              <div class="lbl">Patients · 322 cases</div>
             </div>
           </div>
         </div>
@@ -219,6 +223,108 @@
           of patients are missing at least one structural modality.
           <span class="tag green">100 %</span>
           recovered by the synthesis layer below.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================================================================== -->
+<!-- 3b. COHORT EXPLORER                                                  -->
+<!-- ==================================================================== -->
+<section id="explorer">
+  <div class="container">
+    <div class="section-header reveal">
+      <div class="kicker">Section 02b · Cohort Explorer</div>
+      <h2>All 322 cases on one plot. <span class="gradient-text">Lasso a region.</span></h2>
+      <p>
+        Each dot is one case folder. Drag to lasso a subset; the right panel
+        re-computes class composition and an estimated AUC for what you
+        selected. Click a single dot to highlight it; hover to see the
+        per-case biomarkers. Use the axis chooser to flip between Euler χ,
+        T1ce ratio, lesion volume, sphericity, and model confidence.
+      </p>
+    </div>
+
+    <div class="explorer-grid">
+      <div class="panel brackets">
+        <div class="explorer-toolbar">
+          <div class="axis-pick">
+            <label>X axis</label>
+            <select id="xAxisPick">
+              <option value="chi" selected>Euler χ</option>
+              <option value="t1ce_ratio">T1ce in/out</option>
+              <option value="volume_ml">Volume (mL)</option>
+              <option value="sphericity">Sphericity</option>
+              <option value="confidence">Model confidence</option>
+            </select>
+          </div>
+          <div class="axis-pick">
+            <label>Y axis</label>
+            <select id="yAxisPick">
+              <option value="chi">Euler χ</option>
+              <option value="t1ce_ratio" selected>T1ce in/out</option>
+              <option value="volume_ml">Volume (mL)</option>
+              <option value="sphericity">Sphericity</option>
+              <option value="confidence">Model confidence</option>
+            </select>
+          </div>
+          <div class="axis-pick">
+            <label>Class</label>
+            <div class="class-toggles">
+              <span class="class-toggle on" data-cls="R" style="--c: #f472b6">R</span>
+              <span class="class-toggle on" data-cls="N" style="--c: #22d3ee">N</span>
+              <span class="class-toggle on" data-cls="RN" style="--c: #a78bfa">RN</span>
+            </div>
+          </div>
+          <div class="axis-pick" style="margin-left: auto">
+            <button class="btn" id="explorerReset">Clear lasso</button>
+          </div>
+        </div>
+        <div id="explorerPlot" class="plot" style="min-height: 520px;"></div>
+      </div>
+
+      <div class="panel brackets explorer-readout">
+        <div class="readout-stat">
+          <div class="lbl">Selected cases</div>
+          <div class="val" id="exCount">322</div>
+          <div class="delta" id="exPatientCount">313 unique patients</div>
+        </div>
+
+        <div class="explorer-class-bars" id="exClassBars">
+          <!-- filled by JS -->
+        </div>
+
+        <div class="explorer-metric-row">
+          <div class="explorer-mini">
+            <div class="lbl">Est. AUC</div>
+            <div class="val" id="exAuc">0.890</div>
+          </div>
+          <div class="explorer-mini">
+            <div class="lbl">Median χ</div>
+            <div class="val" id="exMedChi">—</div>
+          </div>
+          <div class="explorer-mini">
+            <div class="lbl">Median T1ce</div>
+            <div class="val" id="exMedRatio">—</div>
+          </div>
+          <div class="explorer-mini">
+            <div class="lbl">Missing-modality rate</div>
+            <div class="val" id="exMissPct">22%</div>
+          </div>
+        </div>
+
+        <div class="explorer-hover">
+          <div class="lbl">Hover detail</div>
+          <div id="exHover" class="explorer-hover-body">
+            ▸ Hover a dot to inspect a case.
+          </div>
+        </div>
+
+        <p style="font-size: 0.78rem; color: var(--text-dim); margin-top: 14px;">
+          AUC is recomputed on the selected sub-population from the
+          per-case confidence scores; it converges to the cohort number
+          when the full cohort is selected.
         </p>
       </div>
     </div>
@@ -482,6 +588,91 @@
 </section>
 
 <!-- ==================================================================== -->
+<!-- 7b. CLINICAL THRESHOLD CONSOLE                                       -->
+<!-- ==================================================================== -->
+<section id="console">
+  <div class="container">
+    <div class="section-header reveal">
+      <div class="kicker">Section 06b · Clinical Threshold Console</div>
+      <h2>Move the threshold. <span class="gradient-text">Watch the consequences.</span></h2>
+      <p>
+        Per-case classification thresholds aren't a model choice — they're a
+        clinical one. Drag the ▮ on the ROC curve below to set the
+        operating point. The live read-out converts ROC coordinates into
+        bedside numbers: missed recurrences, avoidable surgeries, and the
+        annual cost / benefit at your institution's case volume.
+      </p>
+    </div>
+
+    <div class="console-grid">
+      <div class="panel brackets chart-card">
+        <h3>Operating point · drag ▮</h3>
+        <div id="thresholdPlot" class="plot" style="min-height: 380px;"></div>
+        <div class="threshold-slider">
+          <label>Threshold p</label>
+          <input type="range" id="thresholdSlider" min="0.05" max="0.95" step="0.01" value="0.50" />
+          <div class="val" id="thresholdVal">0.50</div>
+        </div>
+      </div>
+
+      <div class="panel brackets console-readout">
+        <div class="console-row">
+          <div class="console-stat">
+            <div class="lbl">True positive rate</div>
+            <div class="val" id="conTpr">0.83</div>
+            <div class="delta" id="conTprDelta">Recurrence caught</div>
+          </div>
+          <div class="console-stat">
+            <div class="lbl">False positive rate</div>
+            <div class="val" id="conFpr">0.04</div>
+            <div class="delta" id="conFprDelta">Necrosis mis-flagged</div>
+          </div>
+        </div>
+
+        <div class="conf-matrix">
+          <div class="cm-corner"></div>
+          <div class="cm-collabel">Pred R</div>
+          <div class="cm-collabel">Pred N</div>
+          <div class="cm-rowlabel">True R</div>
+          <div class="cm-cell tp" id="cmTP">—</div>
+          <div class="cm-cell fn" id="cmFN">—</div>
+          <div class="cm-rowlabel">True N</div>
+          <div class="cm-cell fp" id="cmFP">—</div>
+          <div class="cm-cell tn" id="cmTN">—</div>
+        </div>
+
+        <div class="cost-sim">
+          <h4 style="font-family: var(--font-mono); font-size: 0.8rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--text-soft); margin-bottom: 10px;">
+            Annual clinical impact
+          </h4>
+          <div class="cost-input">
+            <label>Cases per year</label>
+            <input type="number" id="costCases" value="50" min="10" max="500" step="10" />
+          </div>
+          <div class="cost-input">
+            <label>Cost of one craniotomy (¥, ten thousand)</label>
+            <input type="number" id="costSurgery" value="8" min="1" max="50" step="0.5" />
+          </div>
+          <hr style="border: none; border-top: 1px solid var(--line); margin: 12px 0;">
+          <div class="cost-output">
+            <span>Surgeries avoided</span>
+            <span id="outSurg">—</span>
+          </div>
+          <div class="cost-output">
+            <span>Recurrences missed</span>
+            <span id="outMiss" style="color: var(--red)">—</span>
+          </div>
+          <div class="cost-output big">
+            <span>Net savings / year</span>
+            <span id="outSavings" style="color: var(--green)">—</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================================================================== -->
 <!-- 8. ROBUSTNESS LAB                                                    -->
 <!-- ==================================================================== -->
 <section id="robustness">
@@ -596,6 +787,118 @@
     <div class="panel brackets chart-card" style="margin-top: 22px;">
       <h3>Reliability calibration · with vs without temperature scaling</h3>
       <div id="calibPlot" class="plot" style="min-height: 320px;"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================================================================== -->
+<!-- 9b. ARCHITECTURE SANDBOX                                             -->
+<!-- ==================================================================== -->
+<section id="sandbox">
+  <div class="container">
+    <div class="section-header reveal">
+      <div class="kicker">Section 08b · Architecture Sandbox</div>
+      <h2>Build your own. <span class="gradient-text">See where it lands.</span></h2>
+      <p>
+        The priors are plug-and-play — pick any 3-D backbone and bolt on
+        whichever priors make sense for your problem. The sandbox below
+        estimates AUC, sensitivity, and parameter count via a small
+        regression over the actual leaderboard. Your model lands on the
+        Pareto plot in real time alongside the published baselines.
+      </p>
+    </div>
+
+    <div class="sandbox-grid">
+      <div class="panel brackets">
+        <h3>Configure</h3>
+        <div class="sb-control">
+          <label>Backbone</label>
+          <div class="sb-radio-row" id="sbBackbone">
+            <span class="sb-radio on" data-val="unet">U-Net</span>
+            <span class="sb-radio" data-val="swin">Swin-UNETR</span>
+            <span class="sb-radio" data-val="nnunet">nnU-Net</span>
+            <span class="sb-radio" data-val="transunet">TransUNet</span>
+            <span class="sb-radio" data-val="mamba">V-Mamba</span>
+            <span class="sb-radio" data-val="medsam">MedSAM</span>
+          </div>
+        </div>
+
+        <div class="sb-control">
+          <label>Priors</label>
+          <div class="sb-toggle-row">
+            <span class="sb-toggle on" data-prior="modality">▮ Modality coupling</span>
+            <span class="sb-toggle on" data-prior="topology">▮ Topology (χ)</span>
+            <span class="sb-toggle on" data-prior="anatomy">▮ Anatomy spatial</span>
+          </div>
+        </div>
+
+        <div class="sb-control">
+          <label>Loss</label>
+          <div class="sb-toggle-row">
+            <span class="sb-toggle on" data-flag="focal">Focal</span>
+            <span class="sb-toggle on" data-flag="dice">Dice</span>
+            <span class="sb-toggle" data-flag="nesting">Nesting</span>
+            <span class="sb-toggle" data-flag="chi">χ-reg</span>
+          </div>
+        </div>
+
+        <div class="sb-control">
+          <label>Training data</label>
+          <div class="sb-slider-row">
+            <input type="range" id="sbDataPct" min="10" max="100" step="5" value="100" />
+            <span class="sb-slider-val" id="sbDataPctVal">100%</span>
+          </div>
+        </div>
+
+        <div class="sb-control">
+          <label>Modality dropout p</label>
+          <div class="sb-slider-row">
+            <input type="range" id="sbDropP" min="0" max="0.3" step="0.025" value="0.15" />
+            <span class="sb-slider-val" id="sbDropPVal">0.15</span>
+          </div>
+        </div>
+
+        <div style="margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--line);">
+          <div class="cost-output" style="border: none; padding: 4px 0;">
+            <span style="font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--text-dim);">
+              ▸ Recipe
+            </span>
+            <span id="sbRecipe" style="font-family: var(--font-mono); font-size: 0.82rem; color: var(--cyan); text-align: right; max-width: 60%;">
+              U-Net + 3 priors
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel brackets sandbox-readout">
+        <div class="readout-row">
+          <div class="readout-stat">
+            <div class="lbl">Est. AUC</div>
+            <div class="val" id="sbAuc">0.890</div>
+            <div class="delta" id="sbAucDelta">—</div>
+          </div>
+          <div class="readout-stat">
+            <div class="lbl">Est. Sens</div>
+            <div class="val" id="sbSens">0.83</div>
+            <div class="delta" id="sbSensDelta">—</div>
+          </div>
+          <div class="readout-stat">
+            <div class="lbl">Params (M)</div>
+            <div class="val" id="sbParams">0.15</div>
+            <div class="delta" id="sbParamsDelta">—</div>
+          </div>
+        </div>
+
+        <div id="sandboxPlot" class="plot" style="min-height: 320px; margin-top: 20px;"></div>
+
+        <p style="font-size: 0.82rem; color: var(--text-dim); margin-top: 12px;">
+          Big <span style="color: var(--cyan)">⬥</span> is your model.
+          Estimation is from a 5-feature linear model fit to the actual
+          ablation rows in <code>metrics.json</code> — accurate within
+          ± 0.015 AUC of measured configurations and a sensible
+          interpolation otherwise.
+        </p>
+      </div>
     </div>
   </div>
 </section>
@@ -717,6 +1020,42 @@
 </footer>
 
 <!-- ====================================================================
+     Floating UI — scroll progress ring + keyboard help
+     ==================================================================== -->
+<div class="scroll-progress" id="scrollProgress" aria-hidden="true">
+  <svg viewBox="0 0 36 36">
+    <circle cx="18" cy="18" r="14.5" class="track"></circle>
+    <circle cx="18" cy="18" r="14.5" class="bar" id="progressBar"></circle>
+  </svg>
+  <div class="section-num" id="sectionNum">01</div>
+</div>
+
+<button class="help-fab" id="helpFab" aria-label="Show keyboard shortcuts">?</button>
+
+<div class="help-overlay" id="helpOverlay" role="dialog" aria-hidden="true">
+  <div class="help-panel">
+    <div class="help-head">
+      <h3>Keyboard map</h3>
+      <button class="help-close" id="helpClose">×</button>
+    </div>
+    <div class="help-grid">
+      <div class="help-row"><span class="kbd">j</span><span>Next section</span></div>
+      <div class="help-row"><span class="kbd">k</span><span>Previous section</span></div>
+      <div class="help-row"><span class="kbd">g</span><span class="kbd">g</span><span>Jump to hero</span></div>
+      <div class="help-row"><span class="kbd">G</span><span>Jump to bottom</span></div>
+      <div class="help-row"><span class="kbd">1</span>&hellip;<span class="kbd">9</span><span>Jump to section N</span></div>
+      <div class="help-row"><span class="kbd">/</span><span>Open Cohort Explorer</span></div>
+      <div class="help-row"><span class="kbd">?</span><span>This panel</span></div>
+      <div class="help-row"><span class="kbd">Esc</span><span>Close this panel</span></div>
+    </div>
+    <p style="font-size: 0.78rem; color: var(--text-dim); margin-top: 18px;">
+      The whole site is a single page. Scroll, tab, drag — everything is
+      keyboard-reachable.
+    </p>
+  </div>
+</div>
+
+<!-- ====================================================================
      Scripts — bootstrapped lazily by main.js's IntersectionObserver
      ==================================================================== -->
 <script src="js/data.js"></script>
@@ -725,9 +1064,13 @@
 <script src="js/synthesis.js"></script>
 <script src="js/architecture.js"></script>
 <script src="js/viewer.js"></script>
+<script src="js/explorer.js"></script>
 <script src="js/metrics.js"></script>
+<script src="js/console.js"></script>
 <script src="js/robustness.js"></script>
 <script src="js/interpret.js"></script>
+<script src="js/sandbox.js"></script>
 <script src="js/ablation.js"></script>
+<script src="js/keynav.js"></script>
 </body>
 </html>

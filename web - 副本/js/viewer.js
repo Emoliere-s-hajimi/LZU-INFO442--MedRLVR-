@@ -156,18 +156,39 @@
     activeMod = cases[0].available.includes("t1ce") ? "t1ce" : cases[0].available[0];
     updatePills(cases[0]);
 
-    const Niivue = await BrainTT.ensureNiivue();
-    nv = new Niivue({
-      backColor: [0.02, 0.03, 0.08, 1],
-      crosshairColor: [0.13, 0.83, 0.93, 1],
-      crosshairWidth: 1,
-      isResizeCanvas: true,
-      show3Dcrosshair: false,
-      isOrientCube: false,
-      textHeight: 0.04,
-      meshThicknessOn2D: 0,
+    // Let other sections jump us to a case
+    document.addEventListener("braintt:openCase", (e) => {
+      if (e.detail) selectCase(e.detail);
     });
-    nv.attachToCanvas(canvas);
-    await loadVolumes(cases[0]);
+
+    try {
+      const Niivue = await BrainTT.ensureNiivue();
+      nv = new Niivue({
+        backColor: [0.02, 0.03, 0.08, 1],
+        crosshairColor: [0.13, 0.83, 0.93, 1],
+        crosshairWidth: 1,
+        isResizeCanvas: true,
+        show3Dcrosshair: false,
+        isOrientCube: false,
+        textHeight: 0.04,
+        meshThicknessOn2D: 0,
+      });
+      await nv.attachToCanvas(canvas);
+      await loadVolumes(cases[0]);
+    } catch (err) {
+      console.error("[BrainTT] case viewer init failed:", err);
+      loading.innerHTML = `
+        <div style="text-align: center; color: var(--red); padding: 24px;">
+          <div style="font-size: 1rem; margin-bottom: 8px;">⚠ Volume viewer unavailable</div>
+          <div style="font-size: 0.8rem; color: var(--text-soft); font-family: var(--font-mono); max-width: 320px;">
+            ${String(err).replace(/</g, "&lt;")}
+          </div>
+          <div style="font-size: 0.7rem; color: var(--text-dim); margin-top: 14px;">
+            ▸ check the console · verify the NiiVue CDN reaches your network
+          </div>
+        </div>
+      `;
+      loading.classList.remove("hidden");
+    }
   });
 })();

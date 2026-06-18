@@ -106,23 +106,33 @@ BrainTT.ensureThree = function () {
 };
 
 /* ---------- NiiVue CDN loader, on demand --------------------------- */
+// We use esm.sh (not jsdelivr) because @niivue/niivue ships an ESM with
+// bare specifiers like `import { mat4 } from "gl-matrix"` — browsers can't
+// resolve those without a bundler or import-map. esm.sh re-writes every
+// bare specifier into a same-origin URL so the browser can follow them
+// natively. Pinned version for reproducibility.
+const NIIVUE_CDN = "https://esm.sh/@niivue/niivue@0.69.0";
 let _niivuePromise = null;
 BrainTT.ensureNiivue = function () {
   if (window.Niivue) return Promise.resolve(window.Niivue);
   if (_niivuePromise) return _niivuePromise;
-  _niivuePromise = new Promise((res, rej) => {
-    const s = document.createElement("script");
-    s.type = "module";
-    s.innerHTML = `
-      import { Niivue } from "https://niivue.github.io/niivue/dist/index.min.js";
-      window.Niivue = Niivue;
-      window.dispatchEvent(new Event("niivue:ready"));
-    `;
-    const onReady = () => { window.removeEventListener("niivue:ready", onReady); res(window.Niivue); };
-    window.addEventListener("niivue:ready", onReady);
-    s.onerror = rej;
-    document.head.appendChild(s);
-  });
+  _niivuePromise = (async () => {
+    // 20s timeout — fail fast and surface the error if the CDN is unreachable.
+    const timeout = new Promise((_, rej) =>
+      setTimeout(() => rej(new Error("NiiVue load timed out (20s)")), 20000)
+    );
+    try {
+      const mod = await Promise.race([import(NIIVUE_CDN), timeout]);
+      if (!mod || !mod.Niivue) {
+        throw new Error("NiiVue module loaded but does not export `Niivue`");
+      }
+      window.Niivue = mod.Niivue;
+      return mod.Niivue;
+    } catch (err) {
+      console.error("[BrainTT] NiiVue failed to load:", err);
+      throw err;
+    }
+  })();
   return _niivuePromise;
 };
 
