@@ -13,7 +13,7 @@
 
 ![BrainTTNet v2.0 architecture](model.jpg)
 
-*Figure 1 — BrainTTNet v2.0. Five stages: (1) **Modality Coupling Prior** at the stem (per-modality CNNs, learnable clinical coupling matrix, voxel-wise spatial-modality attention, `missing_mask`-gated global fusion weight); (2) **U-Net Encoder** with residual blocks down to a 16³ bottleneck at 256 channels; (3) **Dual Medical Priors** at the bottleneck — Topology Shape Prior (multi-scale morph gradient + shape signature + spatial attention + χ regression side head) and Anatomy Spatial Prior (centre-biased mask + per-case (ρ,D) head + depthwise Laplacian + reaction-diffusion step); (4) **Anisotropic Decoder** with factorised 3×3×1 + 1×1×3 conv blocks; (5) **Multi-task Heads** — nested WT/TC/ET segmentation, deep-supervision aux outputs at 64³ and 32³, classification head taking the GAP'd bottleneck plus a 4-D auxiliary feature vector, and the χ regression head. Per-layer input/output shapes are tabulated in [`docs/BRAINTT_LAYER_BY_LAYER.md`](docs/BRAINTT_LAYER_BY_LAYER.md); the conceptual deep-dive is in [`docs/MODEL_ARCHITECTURE.md`](docs/MODEL_ARCHITECTURE.md).*
+*Figure 1 — BrainTTNet v2.0. Five stages: (1) **Modality Coupling Prior** at the stem (per-modality CNNs, learnable clinical coupling matrix, voxel-wise spatial-modality attention, `missing_mask`-gated global fusion weight); (2) **U-Net Encoder** with residual blocks down to a 16³ bottleneck at 256 channels; (3) **Dual Medical Priors** at the bottleneck — Topology Shape Prior (multi-scale morph gradient + shape signature + spatial attention + χ regression side head) and Anatomy Spatial Prior (centre-biased mask + per-case (ρ,D) head + depthwise Laplacian + reaction-diffusion step); (4) **Anisotropic Decoder** with factorised 3×3×1 + 1×1×3 conv blocks; (5) **Multi-task Heads** — nested WT/TC/ET segmentation, deep-supervision aux outputs at 64³ and 32³, classification head taking the GAP'd bottleneck plus a 4-D auxiliary feature vector, and the χ regression head.*
 
 ### Components (one line per module)
 
@@ -223,12 +223,3 @@ All numerical results in this card are reproducible from the JSON manifest at `w
 
 ---
 
-## Contact
-
-INFO 442 Team 14 · live demo: <https://braintt.vercel.app> · repository:
-<https://github.com/Emoliere-s-hajimi/LZU-INFO442-BrainTT> · issues: file
-at the same repo.
-
----
-
-*Model card v2.2 · 2026-06-29 · Conforms to Mitchell et al. (2019) "Model Cards for Model Reporting" structure. Cohort: 322 case folders (52 N · 199 R · 71 RN) · stratified 258 / 64 split, seed 442. Companion artifacts: [`M5_modelling.md`](M5_modelling.md), [`M6_final_report.md`](M6_final_report.md), [`M6_presentation.md`](M6_presentation.md), [`docs/BRAINTT_LAYER_BY_LAYER.md`](docs/BRAINTT_LAYER_BY_LAYER.md), [`web.md`](web.md).*
