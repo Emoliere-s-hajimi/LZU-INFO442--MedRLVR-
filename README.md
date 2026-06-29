@@ -11,6 +11,10 @@
 
 This is a data-science project carried out in collaboration with the **Institute of Software, Chinese Academy of Sciences (ISCAS)** and **Beijing Tiantan Hospital**, advised by **Prof. Zhulin An (ISCAS) and Prof. Zhongfeng Kang (Lanzhou University)**. **The team has been granted access to a private post-radiation brain-tumor MRI cohort that is not publicly available**, and our goal is to build a clinically useful decision-support pipeline on top of it. 
 
+<p align="center">
+  <img src="model,jpg" width="100%" />
+</p>
+
 ---
 
 ## 1 · Clinical motivation and project value
