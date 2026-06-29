@@ -146,7 +146,7 @@ This last finding — the linear-classifier ceiling at AUC = 0.876 — is the be
 
 ![BrainTTNet architecture](model.jpg)
 
-*Figure 5.1 — BrainTTNet architecture. The five top-row stages map one-to-one to code modules; the five bottom-row panels (A–E) detail the sub-blocks. Input flows left-to-right: 4-channel MRI → **Modality Coupling Prior** (Stem) → **U-Net Encoder** → **Dual Medical Priors** at the bottleneck (Topology Shape + Anatomy Spatial) → **Anisotropic Decoder** → **Multi-task heads** (nested WT/TC/ET segmentation, R-vs-N classification with aux features, deep-supervision aux outputs, and the χ regression side head). Skip connections, residual adds, and the per-modality fusion attention are drawn explicitly. Per-layer input/output shapes are tabulated in [`docs/BRAINTT_LAYER_BY_LAYER.md`](docs/BRAINTT_LAYER_BY_LAYER.md).*
+*Figure 5.1 — BrainTTNet architecture. The five top-row stages map one-to-one to code modules; the five bottom-row panels (A–E) detail the sub-blocks. Input flows left-to-right: 4-channel MRI → **Modality Coupling Prior** (Stem) → **U-Net Encoder** → **Dual Medical Priors** at the bottleneck (Topology Shape + Anatomy Spatial) → **Anisotropic Decoder** → **Multi-task heads** (nested WT/TC/ET segmentation, R-vs-N classification with aux features, deep-supervision aux outputs, and the χ regression side head). Skip connections, residual adds, and the per-modality fusion attention are drawn explicitly.*
 
 For text-based readers, the equivalent block diagram is:
 
