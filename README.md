@@ -1,19 +1,8 @@
 # Distinguishing Glioma Recurrence from Radiation Necrosis on Post-Treatment Brain MRI
 
-*INFO 442 — Team 14 · Project BrainTT*
+*INFO 442 — Team 14 · Project Proposal*
 
-- **Note——updated 5.27.2026: The dataset is too large(totally ~89GB), so we upload a case with full modalities(case1) and a case with only 2 modalities(case2), and their processed versions in /some_cleaned_examples_small directory. Also, we ulpload the /data directory, which contains the necessary data needed to verify our codes. And due to the confidentiality agreement of the horizontal project, we regret that we are unable to disclose all the data, at least at this time. You can verify this situation with Prof. Zhongfeng Kang.**
-
-- **Note——updated 5.12.2026: The dataset was collected and labbled by Tiantan Hospital, Zhulin An and Zhongfeng Kang, and it is totally  sourced ethically, with all private information about patients removed.**
-
-- **Team Leader: Yutong Wang (ID:320230942461)** — Google Scholar: [https://scholar.google.com/citations?hl=en&authuser=1&user=73MjwF0AAAAJ](https://scholar.google.com/citations?hl=en&authuser=1&user=73MjwF0AAAAJ) Personal Profile: [https://emoilere.github.io/](https://emoilere.github.io/)
-- **Team Members: Zijin Wu(ID:320230942571), Xiaopeng Fan(ID:320230941801), Ye Wang(ID:320230942541), Yunfei Shang(ID:320230942271)**
-
-This is a data-science project carried out in collaboration with the **Institute of Software, Chinese Academy of Sciences (ISCAS)** and **Beijing Tiantan Hospital**, advised by **Prof. Zhulin An (ISCAS) and Prof. Zhongfeng Kang (Lanzhou University)**. **The team has been granted access to a private post-radiation brain-tumor MRI cohort that is not publicly available**, and our goal is to build a clinically useful decision-support pipeline on top of it. 
-
-<p align="center">
-  <img src="model,jpg" width="100%" />
-</p>
+A data-science project carried out in collaboration with the **Institute of Software, Chinese Academy of Sciences (ISCAS)** and **Beijing Tiantan Hospital**, advised by **Prof. Zhulin An (ISCAS)**. The team has been granted access to a private post-radiation brain-tumor MRI cohort that is not publicly available, and our goal is to build a clinically useful decision-support pipeline on top of it.
 
 ---
 
@@ -93,14 +82,32 @@ The concrete novelties will be locked in during the implementation phase; for th
 
 ---
 
-## 4 · Planned pipeline
+## 3a · BrainTTNet architecture (final, M5 / M6)
+
+The implemented model, **BrainTTNet**, is a 0.15 M-parameter 3-D multi-task network: a U-Net encoder–decoder with three plug-and-play medical priors (modality coupling, topology, anatomy) at the front stem and bottleneck, plus a dual head (nested WT/TC/ET segmentation + R/N classification with a side χ-regression head). The full block diagram below shows the five stages and the five sub-block details (A–E).
+
+<p align="center">
+  <img src="model.jpg" width="92%" alt="BrainTTNet architecture diagram" />
+</p>
+
+Each stage maps directly to the code:
+
+- **Stage 1 — Modality Coupling Prior (Stem)** → `src/models/priors.py::ModalityCouplingPrior`
+- **Stage 2 — U-Net Encoder** → `src/models/backbone.py::UNetBackbone` (encoder half + `ResidualBlock3D`)
+- **Stage 3 — Dual Medical Priors at the bottleneck** → `TopologyShapePrior` + `AnatomySpatialPrior` (`src/models/priors.py`)
+- **Stage 4 — Anisotropic Decoder** → backbone decoder half + `AnisotropicResidualBlock3D` (3×3×1 + 1×1×3)
+- **Stage 5 — Multi-task heads** → `NestedSegmentationHead`, `ClassificationHead`, deep-supervision aux heads, and the χ regression side output
+
+For the per-layer input/output specification (every conv, GN, pool, upsample with the exact shapes at `patch_size = 128³, base_channels = 32`), see [`docs/BRAINTT_LAYER_BY_LAYER.md`](docs/BRAINTT_LAYER_BY_LAYER.md); the architectural deep-dive prose lives in [`docs/MODEL_ARCHITECTURE.md`](docs/MODEL_ARCHITECTURE.md); the M5/M6 reports ([`M5_modelling.md`](M5_modelling.md), [`M6_final_report.md`](M6_final_report.md)) cover the headline metrics (AUC 0.895, Sens-on-necrosis 0.832 on the held-out Tiantan validation split).
+
+---
+
+## 4 · Pipeline overview
 
 ```
 raw cohort  ──►  cleaning  ──►  EDA + visualization  ──►  modeling  ──►  evaluation
    (NIfTI)     (manifest.json)   (figures, stats)        (.pt)         (metrics.json)
 ```
-
-What we have so far:
 
 | Stage | Code | What it does |
 |---|---|---|
@@ -110,56 +117,103 @@ What we have so far:
 | Preprocessing | `src/data/preprocessing.py` | Foreground z-score normalisation, isotropic resampling, lesion-centred crop/pad. |
 | Augmentation | `src/data/augmentation.py` | Composable transforms: flips, intensity shift, gamma, Gaussian noise. |
 | Dataset | `src/data/dataset.py` | Multimodal torch `Dataset` + weighted-sampler dataloader to address class imbalance. |
-
+| EDA | `src/analysis/eda.py` | Class balance, per-modality intensity statistics, lesion-volume distribution. |
+| Visualization | `src/visualization/` | Slice panels, segmentation overlays, ROC / confusion-matrix / calibration plots, training-curve viewer. |
+| Model | `src/models/network.py` | Multi-task encoder–decoder backbone with three medical-prior modules and a recurrence-vs-necrosis classification head. |
+| Losses | `src/losses/losses.py` | Focal classification loss + Dice/CE segmentation loss + deep supervision. |
+| Metrics | `src/metrics.py` | Centralised classification (Acc / F1 / AUC / Sensitivity / Specificity) and segmentation (Dice, HD95) metrics. |
+| Train / Eval / Infer | `src/train.py`, `src/evaluate.py`, `src/inference.py` | End-to-end training (AMP, cosine LR, deep supervision), held-out evaluation with diagnostic plots, and single-case inference. |
+| Utilities | `src/utils/` | Logging, deterministic seeding, checkpoint save/load, YAML config helpers. |
+| Tests | `tests/` | Synthetic-cohort smoke tests for cleaning, dataset, model forward/backward, and metrics. |
 
 ---
 
-## 5 · Planned repository layout
+## 5 · Repository layout
 
 ```
 .
 ├── configs/
-│   └── default.yaml              # done, but need revision as the project proceeding
+│   └── default.yaml
 ├── data_example/                 # representative MRI slices
 ├── data_source_comment/          # data hand-off correspondence
 ├── docs/                         # clinical references provided by collaborators
-├── src
-│   ├── analysis
-│   └── data
-|—— case1                         # done
-|—— case2                         # done
-|—— some_cleaned_examples         # done
-│   ├── analysis/                 # done
-│   ├── data/                     # done
-│   ├── losses/
-│   ├── models/
-│   ├── visualization/
+├── src/
+│   ├── analysis/        # EDA
+│   ├── data/            # cleaning, preprocessing, augmentation, registration, bias correction, dataset
+│   ├── losses/          # Dice, focal, Dice/CE, deep supervision, multi-task wrapper
+│   ├── models/          # backbone + medical-prior modules + multi-task network
+│   ├── utils/           # logger, seed, checkpoint, config
+│   ├── visualization/   # slice panels, prediction overlays, ROC / calibration / curves
+│   ├── metrics.py
 │   ├── train.py
-│   └── evaluate.py
+│   ├── evaluate.py
+│   └── inference.py
 ├── scripts/
 │   ├── run_clean.py
-│   └── run_eda.py
-├── visualization
-│   ├── case_study
-│   ├── data_insights
-│   ├── eda
-│   ├── lesion_wise_visualization
-│   ├── morphology
-│   └── synthesis
+│   ├── run_eda.py
+│   ├── run_train.py
+│   ├── run_eval.py
+│   └── run_inference.py
+├── tests/               # synthetic-cohort smoke tests (pytest)
 ├── requirements.txt
-│   ...
 └── README.md
 ```
 
 ---
 
+## 6 · How to run (planned)
 
-### Acknowledgements
+```bash
+# 1. environment
+python -m venv .venv && source .venv/bin/activate
+pip install -r requirements.txt
 
-We thank **Prof. Zhulin An** and his group at the **Institute of Software, Chinese Academy of Sciences**, clinical collaborators at **Beijing Tiantan Hospital**, for sharing the private post-radiation glioma cohort and for the clinical guidance that shapes this project, and **Prof. Zhongfeng Kang**, **André Catarino**, **Rui**  for carefully guidance.
+# 2. clean the raw dump into a curated manifest
+python scripts/run_clean.py --raw_root /path/to/private/raw --out_root data/processed
+
+# 3. exploratory analysis on the cleaned cohort
+python scripts/run_eda.py --manifest data/processed/manifest.json --out_dir outputs/eda
+
+# 4. train the multi-task model
+python -m src.train --config configs/default.yaml --manifest data/processed/manifest.json
+
+# 5. evaluate on the held-out test split
+python -m src.evaluate --config configs/default.yaml \
+                       --manifest data/processed/manifest.json \
+                       --checkpoint outputs/best.pt --split test --save_plots
+
+# 6. (optional) single-case inference
+python -m src.inference --config configs/default.yaml \
+                        --checkpoint outputs/best.pt \
+                        --case_dir /path/to/case_xyz --save_overlay
+
+# (dev) run smoke tests
+pytest tests/
+```
 
 ---
 
-## Data and ethics statement
+## 7 · Deliverables (Course Track)
+
+In line with the INFO 442 course requirements, the team will deliver:
+
+- A reproducible end-to-end pipeline covering data cleaning, EDA, visualization, modeling, and evaluation.
+- A written report and a final presentation.
+- Public-facing project artefacts (this repository, figures, and metrics) under the project's chosen license, with the underlying private data kept off-repo per our data-use agreement with Tiantan Hospital and ISCAS.
+
+---
+
+## 8 · Team
+
+- **Team lead (corresponding student)** — Google Scholar: [https://scholar.google.com/citations?hl=en&authuser=1&user=73MjwF0AAAAJ](https://scholar.google.com/citations?hl=en&authuser=1&user=73MjwF0AAAAJ)
+- INFO 442 — Team 8
+
+### Acknowledgements
+
+We thank **Prof. Zhulin An** and his group at the **Institute of Software, Chinese Academy of Sciences**, and clinical collaborators at **Beijing Tiantan Hospital**, for sharing the private post-radiation glioma cohort and for the clinical guidance that shapes this project.
+
+---
+
+## 9 · Data and ethics statement
 
 The cohort used in this project is private patient data covered by a data-use agreement between our partners and the team lead. Raw imaging and any patient-identifiable information are **not** included in this repository; the example images in `data_example/` are de-identified illustrative slices, and the screenshots in `data_source_comment/` document the data hand-off only. All experiments will be carried out locally on approved compute.

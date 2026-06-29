@@ -144,6 +144,12 @@ This last finding — the linear-classifier ceiling at AUC = 0.876 — is the be
 
 ### 5.1 BrainTTNet architecture (`src/models/network.py`)
 
+![BrainTTNet architecture](model.jpg)
+
+*Figure 5.1 — BrainTTNet architecture. The five top-row stages map one-to-one to code modules; the five bottom-row panels (A–E) detail the sub-blocks. Input flows left-to-right: 4-channel MRI → **Modality Coupling Prior** (Stem) → **U-Net Encoder** → **Dual Medical Priors** at the bottleneck (Topology Shape + Anatomy Spatial) → **Anisotropic Decoder** → **Multi-task heads** (nested WT/TC/ET segmentation, R-vs-N classification with aux features, deep-supervision aux outputs, and the χ regression side head). Skip connections, residual adds, and the per-modality fusion attention are drawn explicitly. Per-layer input/output shapes are tabulated in [`docs/BRAINTT_LAYER_BY_LAYER.md`](docs/BRAINTT_LAYER_BY_LAYER.md).*
+
+For text-based readers, the equivalent block diagram is:
+
 ```
 Input (B, 4, D, H, W)        ← T1, T1ce, T2, FLAIR_synth
    │
@@ -151,7 +157,7 @@ Input (B, 4, D, H, W)        ← T1, T1ce, T2, FLAIR_synth
 ModalityCouplingPrior        ← per-modality stem + fusion attention,
    │                           missing_mask-gated softmax
    ▼ stem_feat (B, 32, …)
-UNetBackbone (3D)            ← residual + anisotropic blocks
+UNetBackbone (3D)            ← residual encoder + anisotropic decoder
    ├─ enc1 → enc2 → enc3 → bottleneck
    └─ dec3 → dec2 → dec1
    │
@@ -159,7 +165,7 @@ UNetBackbone (3D)            ← residual + anisotropic blocks
 TopologyShapePrior           ← predicts χ_pred (scalar per case)
    │
    ▼
-AnatomySpatialPrior          ← learned anatomical attention map
+AnatomySpatialPrior          ← centre-biased mask + reaction-diffusion step
    │
    ▼
    ├─→ ClassificationHead (+ aux features) → (B, 2) logits
