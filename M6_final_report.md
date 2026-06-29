@@ -2,7 +2,7 @@
 
 **BrainTT: Multimodal Prior-Aware Discrimination of Glioma Recurrence from Radiation Necrosis on Post-Treatment Brain MRI**
 
-**INFO 442 · Team 14 · Final delivery (Week 9–10) · 30 % of final grade**
+**INFO 442 · Team 14**
 
 Lanzhou University × Institute of Software, Chinese Academy of Sciences (ISCAS) × Beijing Tiantan Hospital
 
