@@ -360,26 +360,6 @@ Site contents (full feature map in [`web.md`](web.md)):
 - **Failure Modes Browser** + **Cohort Explorer** + **keyboard
   navigation overlay** (`?` for the cheat sheet).
 
-Deploy / re-deploy from `web/`:
-
-```bash
-./scripts/deploy.sh        # one-shot Vercel CLI deploy
-# or push to GitHub and use Vercel's git auto-deploy
-```
-
-See [`web/DEPLOY.md`](web/DEPLOY.md) for full deployment details
-(headers, caching, alternative hosts).
-
-### 7.4 Demo video plan
-
-The 4-minute recorded demo (`docs/M6_demo.mp4`) covers:
-
-1. **0:00–0:30** — problem statement, single de-identified MRI volume on screen.
-2. **0:30–1:30** — preprocess: NIfTI → cleaned `.npz`, modality-coverage audit shown live.
-3. **1:30–2:30** — run `python scripts/run_inference.py …`; explain the JSON output line by line.
-4. **2:30–3:30** — open `notebooks/M6_demo.ipynb`; show seg overlay, fusion attention, χ-vs-class scatter with the case highlighted.
-5. **3:30–4:00** — flip thresholds (default / high-safety / high-specificity) and show how `review_recommended` flips.
-
 ---
 
 ## 8. Limitations and Failure Modes (final)
@@ -607,9 +587,6 @@ docs/
 notebooks/
   M4_eda.ipynb
   M5_modelling.ipynb
-  M6_demo.ipynb                     M6 demo walkthrough
 ```
 
 ---
-
-*Document version 2.1 · 2026-06-29 · 322-case cohort (52 N · 199 R · 71 RN), 258 / 64 stratified split, seed = 442 · All numbers anchored to `web/data/metrics.json` and the server preprocess report under `/root/nr_subproject/processed/preprocess_report.json`. Live showcase: <https://braintt.vercel.app>. Companion artifacts: [`M5_modelling.md`](M5_modelling.md), [`M6_model_card.md`](M6_model_card.md), [`M6_presentation.md`](M6_presentation.md), [`web.md`](web.md).*
