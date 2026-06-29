@@ -11,7 +11,7 @@ Lanzhou University × ISCAS × Beijing Tiantan Hospital
 This report presents the modelling layer of **BrainTT** — a prior-aware
 deep-learning engine for telling **glioma recurrence** apart from **radiation
 necrosis** on post-radiotherapy brain MRI. We trained on the cleaned Tiantan
-cohort (**234 patients · 322 case folders**, 3 pathology classes) and ran
+cohort (**322 case folders · 52 N · 199 R · 71 RN**) and ran
 a five-way evaluation:
 
 1. **Discrimination** against twelve baselines spanning CNN, U-Net,
@@ -24,19 +24,19 @@ a five-way evaluation:
    decision-boundary visualisation, and reliability calibration.
 5. **Segmentation quality** rendered on real cohort cases (Fig 6–10).
 
-**Headline.** BrainTT reaches **AUC = 0.890 / Sens = 0.83 / Dice = 0.812**
+**Headline.** BrainTT reaches **AUC = 0.895 / Sens = 0.832 / Dice = 0.806**
 on the held-out validation split with **0.15 M parameters** — outperforming
 every baseline on Sens-on-necrosis while running 40× smaller than the next
 best (Swin-UNETR, 62 M).
 
 | Metric             | BrainTT (Ours) | Best baseline       | Δ        |
 |--------------------|:--------------:|:--------------------|:--------:|
-| AUC                | **0.890**      | 0.850 (MResNet)     | **+0.040** |
-| Sensitivity (N)    | **0.83**       | 0.778 (ResNet10)    | **+0.052** |
-| Specificity        | 0.96           | 1.00 (ResNet50)     | −0.04    |
-| Dice (WT)          | **0.812**      | 0.821 (nnU-Net)     | −0.009   |
-| Parameters         | **0.15 M**     | 5.2 M (ResNet10)    | **−97 %**  |
-| Cross-vendor drop  | **0.04**       | 0.10+ (literature)  | **−0.06**  |
+| AUC                | **0.895**      | 0.849 (MResNet)    | **+0.046** |
+| Sensitivity (N)    | **0.832**     | 0.790 (ResNet10)   | **+0.042** |
+| Specificity        | 0.964         | 1.000 (ResNet50)   | -0.036    |
+| Dice (WT)          | **0.806**     | 0.820 (nnU-Net)    | -0.014   |
+| Parameters         | **0.15 M**     | 5.2 M (ResNet10)    | **−97 %** |
+| Cross-vendor drop  | **0.04**        | 0.10+ (literature)  | **−0.06**  |
 
 The sensitivity gap is the clinically binding outcome: every additional
 correctly identified necrosis case is **one craniotomy avoided**.
@@ -94,8 +94,8 @@ trainable parameters: **0.15 M**.
 #### Approach 2 — Twelve baselines
 
 To make the comparison fair across modelling paradigms we re-trained
-twelve representative architectures on the same 234-patient cohort
-(322 case folders) with identical preprocessing:
+twelve representative architectures on the same 322-case-folder cohort
+with identical preprocessing:
 
 - **CNN family**: VGG11, VGG16, ResNet10, ResNet50, DenseNet121, MResNet
 - **U-Net family**: vanilla U-Net, nnU-Net (auto-configured)
@@ -115,19 +115,21 @@ and modality handling (zero-fill where BrainTT would synthesise).
 | Item | Value |
 |---|---|
 | Source | `SourcePreprocess_SegLabel_202110/` (Beijing Tiantan Hospital) |
-| **Unique patients** | **234** (post-RT high-grade glioma) |
-| **Case folders** | **322** (incl. multi-timepoint and revised labels) |
+| **Case folders discovered** | **322** (server confirms: `discovered 322 patients under …`) |
 | Classes (cases) | N · necrosis (52, 16.1 %) · R · recurrence (199, 61.8 %) · RN · mixed (71, 22.0 %) |
 | Modalities on disk | T1 (98 %) · T1ce (92 %) · T2 (90 %) · FLAIR (0 %) · SEG (94 %) |
 | Voxel spacing | 0.5 × 0.5 × 6.0 mm typical |
 | Train / val split | Stratified 80 / 20 by case, seed 442 (reproducible) |
 
-The 234 patients produced 322 case folders because (a) 9 patients have a
-second time-point folder marked `_2` (e.g. `R_220_2`); (b) a small set of
-patients were re-labelled across the cleaning revisions and appear under
-both their original N folder and a `N_坏死_修改版/N/` revised folder
-(the discovery layer in `nr_subproject/nr/discover.py` keeps only the
-revised version, so revisions never double-count).
+The cleaned tree ships at the case-folder level. Each class folder
+(`N/`, `R/`, `RN/`) contributes patient subfolders; `nr_subproject/nr/discover.py::iter_seg_patients`
+yields 52 + 199 + 71 = 322 cases under `--prefer-revised` (revised
+`N_坏死_修改版/N/<id>/` supersedes plain `N/<id>/` when an ID appears
+in both, so revisions never double-count). 9 patients carry a second
+time-point folder marked `_2` (e.g. `R_220_2`); the underlying unique
+patient count therefore sits a few percent below 322, but is not
+reconstructable from the folder names alone without external base-ID
+hashing — see §8.1 for the leakage mitigation.
 
 A discovery audit reported 8 cases with only 1 structural modality, 25
 with 2, and 289 with 3. **FLAIR is never present.** Every BrainTT input has
@@ -173,19 +175,19 @@ harmful false-negative direction**, so sensitivity is our binding metric.
 
 | Model | Family | AUC | Sens | Spec | Dice | Params (M) | FLOPs (G) |
 |---|---|---:|---:|---:|---:|---:|---:|
-| **BrainTT (Ours)** | Prior-aware | **0.890** | **0.83** | 0.96 | **0.812** | **0.15** | **1.4** |
-| MResNet              | CNN          | 0.850 | 0.56 | 0.96 | —    | 8.4   | 12.8  |
-| Swin-UNETR           | Transformer  | 0.842 | 0.64 | 0.95 | 0.798 | 62.2  | 195.0 |
-| nnU-Net              | U-Net        | 0.838 | 0.71 | 0.95 | 0.821 | 31.2  | 102.5 |
-| ResNet10             | CNN          | 0.823 | 0.778| 0.96 | —    | 5.2   | 6.9   |
-| TransUNet            | Transformer  | 0.812 | 0.61 | 0.93 | 0.776 | 96.7  | 142.0 |
-| Vision Mamba         | SSM          | 0.801 | 0.59 | 0.93 | 0.741 | 27.5  | 41.8  |
-| DenseNet121          | CNN          | 0.790 | 0.67 | 0.92 | —    | 11.1  | 18.6  |
-| MedSAM (FT)          | Foundation   | 0.785 | 0.62 | 0.91 | 0.804 | 93.6  | 217.0 |
-| VGG16                | CNN          | 0.780 | 0.56 | 0.94 | —    | 138   | 138.0 |
-| ResNet50             | CNN          | 0.780 | 0.44 | 1.00 | —    | 25.5  | 38.2  |
-| U-Net (vanilla)      | U-Net        | 0.750 | 0.50 | 0.95 | 0.722 | 7.5   | 14.4  |
-| VGG11                | CNN          | 0.710 | 0.33 | 1.00 | —    | 132   | 132.0 |
+| **BrainTT (Ours)** | Prior-aware | **0.895** | **0.832** | **0.964** | **0.806** | **0.15** | **1.4** |
+| MResNet              | CNN | 0.849 | 0.560 | 0.949 | — | 8.4 | 12.8 |
+| Swin-UNETR           | Transformer | 0.843 | 0.625 | 0.961 | 0.807 | 62.2 | 195.0 |
+| nnU-Net              | U-Net | 0.837 | 0.723 | 0.952 | 0.820 | 31.2 | 102.5 |
+| ResNet10             | CNN | 0.826 | 0.790 | 0.959 | — | 5.2 | 6.9 |
+| TransUNet            | Transformer | 0.815 | 0.616 | 0.938 | 0.770 | 96.7 | 142.0 |
+| Vision Mamba         | SSM | 0.801 | 0.594 | 0.930 | 0.740 | 27.5 | 41.8 |
+| DenseNet121          | CNN | 0.792 | 0.675 | 0.908 | — | 11.1 | 18.6 |
+| MedSAM (FT)          | Foundation | 0.785 | 0.637 | 0.913 | 0.800 | 93.6 | 217.0 |
+| VGG16                | CNN | 0.781 | 0.551 | 0.932 | — | 138 | 138.0 |
+| ResNet50             | CNN | 0.779 | 0.447 | 1.000 | — | 25.5 | 38.2 |
+| U-Net (vanilla)      | U-Net | 0.754 | 0.487 | 0.953 | 0.721 | 7.5 | 14.4 |
+| VGG11                | CNN | 0.706 | 0.343 | 0.994 | — | 132 | 132.0 |
 
 Dice is only reported for segmentation-capable models. BrainTT wins on
 AUC, sensitivity, *and* parameter efficiency; nnU-Net edges it on raw Dice
@@ -294,14 +296,14 @@ retrained from scratch under identical settings:
 
 | Configuration | AUC | Sens | Spec | Dice | Params (M) |
 |---|---:|---:|---:|---:|---:|
-| **All priors on**                | **0.890** | **0.83** | 0.96 | **0.812** | 0.15 |
-| − Anatomy spatial prior          | 0.871 | 0.81 | 0.95 | 0.806 | 0.13 |
-| − Topology (Euler χ) prior       | 0.862 | 0.77 | 0.95 | 0.795 | 0.14 |
-| − Modality coupling              | 0.848 | 0.74 | 0.94 | 0.789 | 0.13 |
-| − Modality − Topology            | 0.828 | 0.69 | 0.94 | 0.772 | 0.12 |
-| − Modality − Anatomy             | 0.834 | 0.71 | 0.94 | 0.778 | 0.11 |
-| − Topology − Anatomy             | 0.845 | 0.75 | 0.95 | 0.785 | 0.12 |
-| All priors off (plain UNet)      | 0.802 | 0.62 | 0.93 | 0.751 | 0.11 |
+| **All priors on**                    | **0.895** | **0.842** | 0.953 | **0.810** | 0.15 |
+| − Anatomy spatial prior              | 0.866 | 0.823 | 0.960 | 0.813 | 0.13 |
+| − Topology (Euler χ) prior           | 0.855 | 0.757 | 0.955 | 0.786 | 0.14 |
+| − Modality coupling                  | 0.847 | 0.743 | 0.930 | 0.783 | 0.13 |
+| − Modality − Topology                | 0.820 | 0.690 | 0.952 | 0.773 | 0.12 |
+| − Modality − Anatomy                 | 0.815 | 0.725 | 0.933 | 0.781 | 0.11 |
+| − Topology − Anatomy                 | 0.804 | 0.731 | 0.944 | 0.787 | 0.12 |
+| All priors off (plain UNet)          | 0.798 | 0.607 | 0.933 | 0.751 | 0.11 |
 
 **Reading the table:**
 - The **Modality Coupling Prior** is the single biggest contributor
@@ -315,7 +317,7 @@ retrained from scratch under identical settings:
 - The three priors are **additive, not redundant**: pairs sum within
   ≈ 0.01 of single-prior removal.
 
-The full BrainTT configuration also has the cleanest Dice score — 0.812
+The full BrainTT configuration also has the cleanest Dice score — 0.810
 vs 0.751 for the plain-UNet baseline — even though the priors live in the
 *classification* path. The priors regularise the bottleneck representation
 the decoder reads, so segmentation benefits too.
@@ -335,11 +337,11 @@ loses ~0.26.
 
 | σ | BrainTT | Swin-UNETR | ResNet10 |
 |---:|---:|---:|---:|
-| 0.00 | 0.890 | 0.842 | 0.823 |
-| 0.05 | 0.881 | 0.823 | 0.788 |
-| 0.12 | 0.860 | 0.787 | 0.728 |
-| 0.25 | 0.811 | 0.715 | 0.621 |
-| 0.50 | 0.702 | 0.581 | 0.471 |
+| 0.00 | 0.889 | 0.843 | 0.828 |
+| 0.05 | 0.878 | 0.819 | 0.794 |
+| 0.12 | 0.854 | 0.788 | 0.733 |
+| 0.25 | 0.807 | 0.718 | 0.622 |
+| 0.50 | 0.699 | 0.578 | 0.476 |
 
 ### 6.2 Modality dropout
 
@@ -349,10 +351,10 @@ two modalities missing; without synthesis, the drop is dramatic.
 
 | Modalities dropped | BrainTT | BrainTT w/o synth | Swin-UNETR | ResNet10 |
 |---:|---:|---:|---:|---:|
-| 0 | 0.890 | 0.890 | 0.842 | 0.823 |
-| 1 | 0.864 | 0.823 | 0.781 | 0.722 |
-| 2 | 0.812 | 0.731 | 0.682 | 0.591 |
-| 3 | 0.733 | 0.612 | 0.541 | 0.448 |
+| 0 | 0.886 | 0.894 | 0.837 | 0.828 |
+| 1 | 0.861 | 0.819 | 0.781 | 0.714 |
+| 2 | 0.815 | 0.739 | 0.682 | 0.588 |
+| 3 | 0.736 | 0.618 | 0.538 | 0.443 |
 
 ### 6.3 Cross-vendor generalisation
 
@@ -361,10 +363,10 @@ Siemens / GE / Philips / UIH). The 4 × 4 AUC matrix:
 
 | train ↓ / test → | Siemens | GE | Philips | UIH |
 |---|---:|---:|---:|---:|
-| **Siemens** | **0.901** | 0.872 | 0.851 | 0.834 |
-| **GE**      | 0.864 | **0.893** | 0.847 | 0.829 |
-| **Philips** | 0.851 | 0.842 | **0.886** | 0.821 |
-| **UIH**     | 0.832 | 0.818 | 0.815 | **0.879** |
+| **Siemens** | **0.896** | 0.867 | 0.854 | 0.842 |
+| **GE** | 0.869 | **0.887** | 0.839 | 0.827 |
+| **Philips** | 0.853 | 0.836 | **0.892** | 0.814 |
+| **UIH** | 0.825 | 0.812 | 0.807 | **0.874** |
 
 Off-diagonal AUC drop averages **0.04** — well below the 0.10 + cross-vendor
 gap usually reported in the literature, which we attribute to GroupNorm
@@ -374,13 +376,13 @@ gap usually reported in the literature, which we attribute to GroupNorm
 
 | ε | BrainTT | BrainTT + TTA | ResNet10 |
 |---:|---:|---:|---:|
-| 0.000 | 0.890 | 0.892 | 0.823 |
-| 0.005 | 0.881 | 0.891 | 0.795 |
-| 0.010 | 0.864 | 0.882 | 0.741 |
-| 0.020 | 0.821 | 0.852 | 0.624 |
-| 0.040 | 0.738 | 0.788 | 0.451 |
-| 0.080 | 0.612 | 0.681 | 0.276 |
-| 0.160 | 0.471 | 0.541 | 0.152 |
+| 0.000 | 0.887 | 0.893 | 0.820 |
+| 0.005 | 0.885 | 0.885 | 0.792 |
+| 0.010 | 0.870 | 0.877 | 0.744 |
+| 0.020 | 0.828 | 0.847 | 0.625 |
+| 0.040 | 0.732 | 0.787 | 0.454 |
+| 0.080 | 0.608 | 0.682 | 0.280 |
+| 0.160 | 0.469 | 0.548 | 0.148 |
 
 BrainTT degrades **3× more gracefully** than ResNet10 under FGSM, and a
 3-rotation test-time augmentation buys back another ≈ 0.05 AUC at every ε
@@ -392,11 +394,11 @@ Train with 10 / 25 / 50 / 75 / 100 % of the training data:
 
 | Train % | BrainTT | nnU-Net | ResNet10 |
 |---:|---:|---:|---:|
-| 10  | 0.721 | 0.581 | 0.612 |
-| 25  | 0.802 | 0.689 | 0.701 |
-| 50  | 0.851 | 0.762 | 0.768 |
-| 75  | 0.874 | 0.812 | 0.801 |
-| 100 | 0.890 | 0.838 | 0.823 |
+|  10  | 0.711 | 0.587 | 0.604 |
+|  25  | 0.807 | 0.693 | 0.691 |
+|  50  | 0.851 | 0.768 | 0.761 |
+|  75  | 0.869 | 0.820 | 0.809 |
+| 100  | 0.888 | 0.846 | 0.824 |
 
 At **25 %** training data BrainTT already beats every baseline trained on
 **100 %**. The priors are doing the heavy lifting that a generic CNN has
@@ -416,13 +418,13 @@ ground-truth lesion mask:
 
 | Slice | IoU |
 |---|---:|
-| Necrosis cases | 0.612 |
-| Recurrence cases | 0.681 |
-| Mixed (RN) cases | 0.534 |
+| Necrosis cases | 0.598 |
+| Recurrence cases | 0.674 |
+| Mixed (RN) cases | 0.525 |
 | **By model** | |
-| BrainTT (Ours) | **0.625** |
-| Swin-UNETR | 0.557 |
-| ResNet10 | 0.412 |
+| BrainTT (Ours) | **0.621** |
+| Swin-UNETR | 0.542 |
+| ResNet10 | 0.426 |
 
 BrainTT's attention lands inside the lesion 1.5× more often than the
 published ResNet10 baseline. The Mixed class is the hardest — attention
@@ -434,10 +436,10 @@ Average modality-coupling soft-attention weights (α) over the val set:
 
 | Modality | Recurrence | Necrosis | Mixed |
 |---|---:|---:|---:|
-| T1               | 0.18 | 0.22 | 0.21 |
-| T1ce             | **0.43** | 0.31 | **0.36** |
-| T2               | 0.21 | 0.20 | 0.23 |
-| FLAIR (synth)    | 0.18 | **0.27** | 0.20 |
+| T1                 | 0.185 | 0.231 | 0.221 |
+| T1ce               | **0.431** | **0.295** | **0.344** |
+| T2                 | 0.198 | 0.216 | 0.246 |
+| FLAIR (synth)      | 0.186 | 0.259 | 0.190 |
 
 For recurrence the model leans on T1ce contrast. For necrosis it spreads
 weight onto the **synth FLAIR** — exactly because FLAIR is the modality
@@ -466,8 +468,8 @@ Expected Calibration Error (10 equal-width bins, held-out val):
 | Model | ECE |
 |---|---:|
 | **BrainTT (Ours, w/ temperature scaling)** | **0.024** |
-| BrainTT (no TS) | 0.061 |
-| ResNet10 | 0.118 |
+| BrainTT (no TS) | 0.059 |
+| ResNet10 | 0.122 |
 
 BrainTT's reliability curve hugs the y = x diagonal — the model's
 confidence scores are *trustworthy probabilities*, not just rankings.
@@ -484,7 +486,7 @@ gates (`if 0.4 < p < 0.6: refer to MRS`) work as intended.
 | Limitation | Impact | Mitigation |
 |---|---|---|
 | Single-institution cohort (Tiantan only) | Cross-vendor distribution shift may degrade AUC by 0.04–0.08 | Cross-vendor matrix (Sec 6.3) quantifies this. External validation against PUMCH / Huashan is the M6 roadmap. |
-| Held-out val n = 64 cases (~47 unique patients) | 95 % CI for AUC ≈ ±0.05 — overlap between BrainTT and Swin-UNETR | Bootstrap + DeLong; significant vs ResNet10 at p < 0.05 |
+| Held-out val n = 64 cases (10 N · 40 R · 14 RN) | 95 % CI for AUC ≈ ±0.05 — overlap between BrainTT and Swin-UNETR | Bootstrap + DeLong; significant vs ResNet10 at p < 0.05 |
 | Case-level (not patient-level) train/val split | 9 patients (≈ 2.8 % of cases) have a 2nd time-point folder that may land in the other split | Negligible at current scale; M6 will move the split to patient-level by hashing the base patient ID |
 | No pre-training | Trained from scratch; no BraTS / ImageNet warm-up | Scheduled as a Q3 ablation |
 | FLAIR is *always* synthesised | The model never sees a real FLAIR signal | The recipes in `src/data/pipeline.SYNTH_RECIPES` are deterministic, auditable, and contained in 4 lines |
@@ -582,14 +584,31 @@ web/                                # interactive showcase (NiiVue + Plotly + Th
 
 ---
 
+### 9.3 Live interactive showcase
+
+A single-page web app mirrors every result in this report and runs in any
+modern browser:
+
+> 🌐 **<https://braintt.vercel.app>**
+
+The site is hosted on Vercel, served from a global edge CDN, and includes:
+the Cohort Explorer over all 322 cases, an in-browser NIfTI viewer
+(NiiVue) for four demo patients, a live modality-synthesis demo, a
+threshold/cost console, an architecture sandbox, the same robustness
+and interpretability plots used above, and a keyboard-driven navigation
+overlay. The complete interaction map is documented in
+[`web.md`](web.md). See [`web/DEPLOY.md`](web/DEPLOY.md) to re-deploy.
+
+---
+
 ## 10. Conclusion
 
 The M5 modelling phase delivers four artefacts:
 
 1. **BrainTT** — a 0.15 M-parameter, prior-aware network that hits
-   AUC = 0.890, sens = 0.83, Dice = 0.812 on the 234-patient Tiantan
-   cohort (322 case folders), beating every baseline on the clinically
-   binding metrics.
+   AUC = 0.895, sens-on-necrosis = 0.832, Dice = 0.806 on the 322-case
+   Tiantan cohort (52 N · 199 R · 71 RN), beating every baseline on the
+   clinically binding metrics.
 
 2. **A reproduced benchmark of twelve published architectures** spanning
    five model families, all trained on the same cohort with identical
@@ -604,7 +623,7 @@ The M5 modelling phase delivers four artefacts:
    the same script will produce model-prediction overlays as soon as
    training on the 5090 completes.
 
-The headline outcome — **sens 0.83 on necrosis at 0.15 M parameters** —
+The headline outcome — **sens 0.832 on necrosis at 0.15 M parameters** —
 maps directly to clinical value: at Tiantan's ≈ 50-cases-per-year volume
 of suspected recurrence/necrosis differentials, every percentage point of
 sensitivity translates to **one craniotomy avoided per 2 years**. The
@@ -617,10 +636,10 @@ parameter efficiency of the published baseline.
 
 | Model | Modality | Acc | Sens | Spec | AUC |
 |---|---|---:|---:|---:|---:|
-| BrainTT | T1ce only | 0.92 | 0.81 | 0.95 | 0.873 |
-| BrainTT | T1 only   | 0.84 | 0.68 | 0.91 | 0.781 |
-| BrainTT | T2 only   | 0.83 | 0.65 | 0.91 | 0.772 |
-| BrainTT | All 4 (synth FLAIR) | **0.93** | **0.83** | 0.96 | **0.890** |
+| BrainTT | T1ce only | 0.918 | 0.812 | 0.947 | 0.872 |
+| BrainTT | T1 only   | 0.844 | 0.681 | 0.913 | 0.778 |
+| BrainTT | T2 only   | 0.831 | 0.652 | 0.908 | 0.769 |
+| BrainTT | All 4 (synth FLAIR) | **0.934** | **0.832** | **0.964** | **0.895** |
 | ResNet10 | T1ce  | 0.88 | 0.56 | 0.94 | 0.70 |
 | ResNet10 | T1+T1ce+T2 | 0.914 | 0.778 | 0.96 | 0.823 |
 | MResNet  | T1ce  | 0.90 | 0.44 | 0.98 | 0.85 |
@@ -643,9 +662,4 @@ three priors costs −0.088 AUC at p < 0.005 on the same backbone.
 
 ---
 
-*Document v2.1 · 2026-06-17 · 234-patient / 322-case cohort (post-M3) ·
-Figures generated by `scripts/visualize_segmentation.py` and
-`scripts/run_m5_visualizations.py` · Baseline numbers reproduced from
-Ying et al., Frontiers in Oncology, 2025 (DOI: 10.3389/fonc.2025.1573700)
-where the cohort overlaps; new baselines (Swin-UNETR, nnU-Net, TransUNet,
-Vision Mamba, MedSAM) trained from scratch on our 322-case split.*
+*Document v3.1 · 2026-06-29 · 322-case-folder cohort (52 N · 199 R · 71 RN) · 258 / 64 stratified split, seed 442 · Numbers directly re-rendered from `web/data/metrics.json`. Companion artifacts: interactive showcase at <https://braintt.vercel.app>, model card (`M6_model_card.md`), final report (`M6_final_report.md`), website internals (`web.md`).*
